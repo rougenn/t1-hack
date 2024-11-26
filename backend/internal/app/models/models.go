@@ -1,6 +1,6 @@
 package models
 
-type User struct {
+type Admin struct {
 	ID           int    `json:"id"`
 	Email        string `json:"email"`
 	PasswordHash string `json:"-"`          // хеш пароля. будем сравнивать именно хеш.

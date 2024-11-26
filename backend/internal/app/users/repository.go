@@ -5,9 +5,9 @@ import (
 	"t1/internal/app/models"
 )
 
-func AddToDB(db *sql.DB, user models.User) (int, int64, error) {
+func AddToDB(db *sql.DB, user models.Admin) (int, int64, error) {
 	query := `
-    INSERT INTO users (first_name, second_name, company_name, email, phone_number, password_hash)
+    INSERT INTO admins (first_name, second_name, company_name, email, phone_number, password_hash)
     VALUES ($1, $2, $3, $4, $5, $6)
     RETURNING id, created_at
 	`
@@ -21,16 +21,16 @@ func AddToDB(db *sql.DB, user models.User) (int, int64, error) {
 }
 
 func DeleteFromDB(db *sql.DB, userID int) error {
-	query := `DELETE FROM users WHERE id = $1`
+	query := `DELETE FROM admins WHERE id = $1`
 	_, err := db.Exec(query, userID)
 	return err
 }
 
-func GetUserByID(db *sql.DB, userID int) (models.User, error) {
-	var user models.User
+func GetUserByID(db *sql.DB, userID int) (models.Admin, error) {
+	var user models.Admin
 	query := `
 		SELECT id, email, password_hash, created_at
-		FROM users
+		FROM admins
 		WHERE id = $1
 	`
 	row := db.QueryRow(query, userID)
@@ -38,11 +38,11 @@ func GetUserByID(db *sql.DB, userID int) (models.User, error) {
 	return user, err
 }
 
-func GetUserByEmail(db *sql.DB, email string) (models.User, error) {
-	var user models.User
+func GetUserByEmail(db *sql.DB, email string) (models.Admin, error) {
+	var user models.Admin
 	query := `
 		SELECT id, email, password_hash, created_at
-		FROM users
+		FROM admins
 		WHERE email = $1
 	`
 	row := db.QueryRow(query, email)
