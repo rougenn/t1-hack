@@ -53,14 +53,21 @@ func (r *Server) newAPI() *gin.Engine {
 		ctx.Status(http.StatusOK)
 	})
 
-	engine.POST("/api/user/login", r.LogIn)
-	engine.POST("/api/user/signup", r.Register)
-	engine.POST("/api/user/refresh-token", r.RefreshToken)
+	engine.POST("/api/admin/login", r.LogIn)
+	engine.POST("/api/admin/signup", r.Register)
+	engine.POST("/api/admin/refresh-token", r.RefreshToken)
+	engine.POST("/api/admin/create-manager", r.CreateManager)
+
+	engine.POST("/api/user/create-manager", r.CreateManager)
 
 	protected := engine.Group("/api/")
 	protected.Use(AuthMiddleware())
 
 	return engine
+}
+
+func (r *Server) CreateManager(ctx *gin.Context) {
+
 }
 
 func (r *Server) Start() {

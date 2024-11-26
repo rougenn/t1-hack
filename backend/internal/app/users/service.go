@@ -16,41 +16,41 @@ var (
 )
 
 // SignIn аутентификация пользователя
-func SignIn(DB *sql.DB, email, password string) (models.User, error) {
+func SignIn(DB *sql.DB, email, password string) (models.Admin, error) {
 	user, err := GetUserByEmail(DB, email)
 	if err != nil {
-		return models.User{}, ErrIncorrectData
+		return models.Admin{}, ErrIncorrectData
 	}
 
 	// Сравниваем хэшированный пароль
 	err = bcrypt.CompareHashAndPassword([]byte(user.PasswordHash), []byte(password))
 	if err != nil {
-		return models.User{}, ErrIncorrectData
+		return models.Admin{}, ErrIncorrectData
 	}
 
 	return user, nil
 }
 
 // Register регистрация пользователя
-func Register(DB *sql.DB, req models.RegisterRequest) (models.User, error) {
+func Register(DB *sql.DB, req models.RegisterRequest) (models.Admin, error) {
 	if _, err := GetUserByEmail(DB, req.Email); err == nil {
-		return models.User{}, ErrAlreadyExists
+		return models.Admin{}, ErrAlreadyExists
 	}
 
 	hashedPassword, err := bcrypt.GenerateFromPassword([]byte(req.Password), bcrypt.DefaultCost)
 	if err != nil {
-		return models.User{}, fmt.Errorf("failed to hash password: %w", err)
+		return models.Admin{}, fmt.Errorf("failed to hash password: %w", err)
 	}
 
 	// Создаем пользователя
-	user := models.User{
+	user := models.Admin{
 		Email:        req.Email,
 		PasswordHash: string(hashedPassword),
 	}
 
 	id, createdAt, err := AddToDB(DB, user)
 	if err != nil {
-		return models.User{}, err
+		return models.Admin{}, err
 	}
 
 	user.ID = id
