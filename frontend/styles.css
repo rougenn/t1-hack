@@ -1,0 +1,291 @@
+ @font-face{
+  font-family: 'ALSHauss';
+  src: url(./fonts/ALSHauss-Regular.ttf);
+  font-style: normal;
+  font-display: swap;
+ }
+
+
+ *,
+ ::before,
+ ::after {
+   box-sizing: border-box;
+ }
+ 
+ :where(ul, ol):where([class]) {
+   padding-left: 0;
+ }
+ 
+ body,
+ :where(blockquote, figure):where([class]) {
+   margin: 0;
+ }
+ 
+ :where(
+   h1,
+   h2,
+   h3,
+   h4,
+   h5,
+   h6,
+   p,
+   ul,
+   ol,
+   dl
+ ):where([class]) {
+   margin-block: 0;
+ }
+ 
+ :where(dd[class]) {
+   margin-left: 0;
+ }
+ 
+ :where(fieldset[class]) {
+   margin-left: 0;
+   padding: 0;
+   border: none;
+ }
+ 
+ :where(ul[class]) {
+   list-style: none;
+ }
+ 
+ :where(address[class]) {
+   font-style: normal;
+ }
+ 
+  p {
+   --paragraphMarginBottom: 24px;
+ 
+   margin-block: 0;
+ }
+ 
+ p:where(:not([class]):not(:last-child)) {
+   margin-bottom: var(--paragraphMarginBottom);
+ }
+ 
+ img,
+ video {
+   display: block;
+   max-width: 100%;
+   height: auto;
+ }
+ 
+ input,
+ textarea,
+ select,
+ button {
+   font: inherit;
+ }
+ 
+ html {
+   height: 100%;
+   scrollbar-gutter: stable;
+ }
+ 
+ html,
+ :has(:target) {
+   scroll-behavior: smooth;
+ }
+ 
+ body {
+   min-height: 100%;
+   line-height: 1.5;
+ }
+ 
+ a:where([class]) {
+   display: inline-flex;
+ }
+ 
+ 
+ button,
+ label {
+   cursor: pointer;
+ }
+ 
+ [fill] { fill: currentColor }
+ [stroke] { stroke: currentColor }
+ 
+ svg * {
+   transition-property: fill, stroke;
+ }
+ 
+ :where(table) {
+   border-collapse: collapse;
+   border-color: currentColor;
+ }
+ 
+ @media (prefers-reduced-motion: reduce) {
+   *,
+   ::before,
+   ::after {
+     animation-duration: 0.01ms !important;
+     animation-iteration-count: 1 !important;
+     transition-duration: 0.01ms !important;
+     scroll-behavior: auto !important;
+   }
+ }
+a{
+  text-decoration: none;
+}
+
+
+ :root{
+
+  /*colors*/
+
+  --color-grey-middle: #838383;
+  --color-grey-light: #CDCDCD;
+  --color-grey-text: #4D4D4D;
+  --color-white: #FFFFFF;
+  --color-main: #05AAE6;
+
+  --font-family-als: 'ALSHauss', Roboto-Regular;
+  --transition-duration: 0.3s;
+ }
+
+ body{
+  font-family: var(--font-family-als);
+ }
+
+ .header{
+  display: flex;
+  gap: 12px;
+  align-items: center;
+  height: 74px;
+ }
+
+ .header-logo{
+  width: 109px;
+  height: 54px;
+  padding-left: 1vw;
+ }
+
+ .header-slogan{
+  font-weight: 500;
+  font-size: 18px;
+  line-height: 22px;
+  color: var(--color-grey-middle);
+ }
+
+ /*login*/
+ 
+.main-login{
+  height: 100%;
+  display: flex;
+  flex-direction: column;
+  justify-content: center;
+  align-items: center;
+}
+
+.modal{
+  padding-top: 15vh;
+  text-align: center; 
+}
+
+.welcome{
+  font-weight: 700;
+  font-size: 55px;
+  line-height: 73px;
+  color: var(--color-main);
+  margin-bottom: 20px;
+}
+
+.form-paragraph{
+  color: var(--color-grey-text);
+  font-weight: 500;
+  font-size: 12px;
+  text-align: left; /* Выравнивание по левой границе */
+  line-height: 16px;
+  margin-bottom: 5px;
+
+}
+
+.form-styles{
+  font-size: 12px;
+  line-height: 16px;
+  color: var(--color-grey-light);
+  border: 1px solid var(--color-grey-light);
+  border-radius: 5px;
+  width: 34vw;
+  height: 40px;
+  padding-left: 15px;
+  display: block; /* Каждый элемент на новой строке */
+  text-align: left; /* Выравнивание по левой границе */
+  margin-bottom: 20px;
+}
+
+.button-login{
+  width: 34vw;
+  height: 45px;
+  background-color: var(--color-main);
+  color:var(--color-white);
+  border: none;
+  border-radius: 5px;
+  font-weight: 700;
+  font-size: 18px;
+  line-height: 24px;
+  color: var(--color-white);
+  display: block; /* Каждый элемент на новой строке */
+  text-align: center; /* Выравнивание по центру */
+  margin-top: 20px; /
+}
+
+.without-account{
+  font-size: 15px;
+  line-height: 20px;
+  display: flex;
+  justify-content: space-between;
+  width: 34vw;
+  margin-top: 20px;
+}
+
+.question{
+  color:var(--color-grey-middle);
+  font-weight: 400;
+}
+
+.go-registration{
+  font-weight: 500;
+  text-decoration: underline;
+  color: var(--color-main);
+}
+
+/*registration*/
+
+.main-registration{
+  height: 100%;
+  display: flex;
+  flex-direction: column;
+  justify-content: center;
+  align-items: center;
+
+}
+
+.registration{
+  font-weight: 700;
+  font-size: 55px;
+  line-height: 73px;
+  color: var(--color-main);
+  margin-bottom: 20px;
+}
+
+.back-login {
+  font-weight: 400;
+  font-size: 18px;
+  line-height: 24px;
+  color: var(--color-grey-middle);
+  display: inline-flex; /* Используем flexbox для выравнивания */
+  align-items: center; /* Выравниваем элементы по вертикали */
+}
+
+.back-login::before {
+  content: "";
+  width: 5px;
+  height: 10px;
+  margin-right: 9px;
+  background-image: url(./icons/arrow.svg);
+  background-size: cover;
+  display: inline-block; /* Делаем псевдоэлемент блочным */
+  vertical-align: middle; /* Выравниваем по вертикали */
+}
