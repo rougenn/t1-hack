@@ -29,7 +29,7 @@ func DeleteFromDB(db *sql.DB, userID int) error {
 func GetUserByID(db *sql.DB, userID int) (models.User, error) {
 	var user models.User
 	query := `
-		SELECT id, first_name, second_name, company_name, email, phone_number, password_hash, created_at
+		SELECT id, email, password_hash, created_at
 		FROM users
 		WHERE id = $1
 	`
@@ -38,22 +38,10 @@ func GetUserByID(db *sql.DB, userID int) (models.User, error) {
 	return user, err
 }
 
-func GetUserByPhone(db *sql.DB, phone string) (models.User, error) {
-	var user models.User
-	query := `
-		SELECT id, first_name, second_name, company_name, email, phone_number, password_hash, created_at
-		FROM users
-		WHERE phone_number = $1
-	`
-	row := db.QueryRow(query, phone)
-	err := row.Scan(&user.ID, &user.Email, &user.PasswordHash, &user.CreatedAt)
-	return user, err
-}
-
 func GetUserByEmail(db *sql.DB, email string) (models.User, error) {
 	var user models.User
 	query := `
-		SELECT id, first_name, second_name, company_name, email, phone_number, password_hash, created_at
+		SELECT id, email, password_hash, created_at
 		FROM users
 		WHERE email = $1
 	`

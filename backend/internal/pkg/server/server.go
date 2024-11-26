@@ -7,6 +7,7 @@ import (
 	"net/http"
 	"t1/internal/app/models"
 	"t1/internal/app/users"
+	"t1/internal/pkg/db"
 
 	"github.com/gin-contrib/cors"
 	"github.com/gin-gonic/gin"
