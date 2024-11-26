@@ -56,9 +56,12 @@ func (r *Server) newAPI() *gin.Engine {
 	engine.POST("/api/admin/login", r.LogIn)
 	engine.POST("/api/admin/signup", r.Register)
 	engine.POST("/api/admin/refresh-token", r.RefreshToken)
-	engine.POST("/api/admin/create-manager", r.CreateManager)
+	engine.POST("/api/admin/create-manager", r.CreateManager) // надо реализовать загрузку файла\файлов в запросе
+	// + генерацию ссылки + генерацию уникального айди(его можно в ссылке использовать)
 
-	engine.POST("/api/user/create-manager", r.CreateManager)
+	engine.POST("/api/get-chat/:id", r.GetChat) // просто должны подгружать страничку
+
+	engine.POST("/api/chats/:id/send", r.SendMessage) // тут тебе просто кидают запрос с фронта уже в чате
 
 	protected := engine.Group("/api/")
 	protected.Use(AuthMiddleware())
