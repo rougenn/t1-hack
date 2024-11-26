@@ -53,11 +53,11 @@ func (r *Server) newAPI() *gin.Engine {
 		ctx.Status(http.StatusOK)
 	})
 
-	engine.POST("/user/login", r.LogIn)
-	engine.POST("/user/signup", r.Register)
-	engine.POST("/user/refresh-token", r.RefreshToken)
+	engine.POST("/api/user/login", r.LogIn)
+	engine.POST("/api/user/signup", r.Register)
+	engine.POST("/api/user/refresh-token", r.RefreshToken)
 
-	protected := engine.Group("/")
+	protected := engine.Group("/api/")
 	protected.Use(AuthMiddleware())
 
 	return engine
