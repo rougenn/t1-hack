@@ -38,11 +38,14 @@
                             <button type="submit" class="base-submit"></button>
                         </form>
 
-                        <!-- Форма для документа -->
+                       <!-- Форма для документа -->
                         <form action="/submit-document" method="post" enctype="multipart/form-data" class="base-form" id="documentForm">
                             <div class="input-group input-document">
-                                <label for="document"></label>
-                                <input type="file" id="document" name="document" accept=".pdf,.docx,.txt" placeholder="Документ" class="base-placeholder placeholder-doc input-custom">
+                                <label for="document" class="custom-file-upload">
+                                    <span class="upload-icon"></span>
+                                    Добавить файл
+                                </label>
+                                <input type="file" id="document" name="document" accept=".pdf,.docx,.txt" class="input-custom" style="display: none;">
                             </div>
                             <button type="submit" class="base-submit"></button>
                         </form>
@@ -81,8 +84,6 @@
                             <button type="submit" class="base-submit"></button>
                         </form>
                     </div>
-
-
                 <div class="description-custom">
                     <p class="custom-title">Описание</p>
                     <form action="/submit-description" method="post" class="custom-form" id="customDescripion">
@@ -99,10 +100,12 @@
                             <img src="./icons/example-logo.svg" alt="" class="img-example">
                         </div>
                        <form action="/submit-logo" method="post" id="customLogo">
-                        <div class="input-group custom-logo">
-                            <label for="logo"></label>
-                            <input type="file" id="logo" name="logo" placeholder="Логотип">
-                        </div>
+                            <div class="input-group custom-logo">
+                                <label for="logo" class="custom-file-upload">Добавить файл</label>
+                                <input type="file" id="logo" name="logo" placeholder="Логотип">
+                            </div>
+                            <button type="submit" class="base-submit"></button>
+
                        </form>
                     </div>
                 </div>
@@ -111,7 +114,7 @@
                         <div class="font-form">
                             <form action="/submit-font" method="post" id="customFont" class="form-flex">
                                 <div class="input-group custom-font">
-                                    <label for="font"></label>
+                                    <label for="font" class="custom-file-upload">Добавить файл</label>
                                     <input type="file" id="font" name="font" placeholder="Логотип" accept=".ttf,.otf,.woff,.woff2">
                                 </div>
                                 <button type="submit" class="base-submit"></button>
@@ -135,7 +138,6 @@
                             <button id="applyTextColor" class="base-submit"></button>
                         </form>
                     </div>
-                    
                     <div class="assistent-pick">
                         <p class="custom-title">Ассистент</p>
                         <form action="/submit-assistent-color" class="color-custom-form" id="customAssistent">
@@ -172,9 +174,10 @@
                 <div class="dialog" id="dialog">
                     <!-- Здесь будет диалог -->
                 </div>
-                <div class="window-ask" id="window-ask">
+                <form action="/submit-message" class="window-ask" id="window-ask">
                     <input type="text" name="message" id="message" placeholder="Написать запрос" class="input-message">
-                </div>
+                    <button id="applyMessage" class="base-submit"></button>
+                </form>
             </div>
         </section>
 </body>

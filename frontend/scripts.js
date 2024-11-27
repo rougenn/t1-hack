@@ -5,6 +5,8 @@ document.addEventListener('DOMContentLoaded', function() {
     const dialog = document.getElementById('dialog');
     const headerWindow = document.getElementById('header-window');
     const messageInput = document.getElementById('message');
+    const logoInput = document.getElementById('logo');
+    const logoImage = document.querySelector('.img-example');
 
     fontForm.addEventListener('submit', function(event) {
         event.preventDefault(); // Предотвращаем отправку формы
@@ -45,6 +47,19 @@ document.addEventListener('DOMContentLoaded', function() {
         applyButton.addEventListener('click', function(event) {
             event.preventDefault(); // Предотвращаем отправку формы
             targetElement.style[styleProperty] = colorInput.value;
+
+            // Применяем цвет к элементам в окне диалога и шапке
+            if (targetElementId === 'window-view') {
+                dialog.style[styleProperty] = colorInput.value;
+                // Убеждаемся, что цвет фона поля ввода сообщения не изменяется
+                messageInput.style.backgroundColor = 'white';
+            }
+            if (targetElementId === 'dialog') {
+                headerWindow.style[styleProperty] = colorInput.value;
+            }
+            if (targetElementId === 'window-ask') {
+                headerWindow.style[styleProperty] = colorInput.value;
+            }
         });
     }
 
@@ -67,5 +82,66 @@ document.addEventListener('DOMContentLoaded', function() {
     nameForm.addEventListener('submit', function(event) {
         event.preventDefault(); // Предотвращаем отправку формы
         headerWindow.textContent = nameInput.value;
+    });
+
+    // Обработка отправки сообщений
+    messageInput.addEventListener('keypress', function(event) {
+        if (event.key === 'Enter') {
+            event.preventDefault(); // Предотвращаем отправку формы
+            sendMessage();
+        }
+    });
+
+    function sendMessage() {
+        const userMessage = messageInput.value.trim();
+        if (userMessage === '') return;
+
+        // Создаем элемент для сообщения пользователя
+        const userMessageElement = document.createElement('div');
+        userMessageElement.className = 'message user';
+        userMessageElement.textContent = userMessage;
+
+        // Добавляем сообщение в диалог
+        dialog.appendChild(userMessageElement);
+
+        // Очищаем поле ввода
+        messageInput.value = '';
+
+        // Прокручиваем диалог вниз, чтобы видеть последнее сообщение
+        dialog.scrollTop = dialog.scrollHeight;
+
+        // Здесь можно добавить логику для отправки сообщения на сервер и получения ответа от ассистента
+        // Например, с помощью fetch или axios
+        // Пример:
+        // fetch('/api/assistant', {
+        //     method: 'POST',
+        //     headers: {
+        //         'Content-Type': 'application/json'
+        //     },
+        //     body: JSON.stringify({ message: userMessage })
+        // })
+        // .then(response => response.json())
+        // .then(data => {
+        //     const assistantMessage = data.response;
+        //     const assistantMessageElement = document.createElement('div');
+        //     assistantMessageElement.className = 'message assistant';
+        //     assistantMessageElement.textContent = assistantMessage;
+        //     dialog.appendChild(assistantMessageElement);
+        //     dialog.scrollTop = dialog.scrollHeight;
+        // });
+    }
+
+    // Обработка загрузки изображения
+    logoInput.addEventListener('change', function(event) {
+        const file = event.target.files[0];
+        if (file) {
+            const reader = new FileReader();
+
+            reader.onload = function(e) {
+                logoImage.src = e.target.result;
+            };
+
+            reader.readAsDataURL(file);
+        }
     });
 });
