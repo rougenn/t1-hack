@@ -154,19 +154,7 @@ document.addEventListener('DOMContentLoaded', function() {
             targetElement.style[styleProperty] = colorInput.value;
         });
     }
-    // function applyColor(colorInputId, targetClassName, styleProperty) {
-    //     const colorInput = document.getElementById(colorInputId);
-    //     const applyButton = document.getElementById(`apply${colorInputId.charAt(0).toUpperCase() + colorInputId.slice(1)}`);
     
-    //     applyButton.addEventListener('click', function(event) {
-    //         event.preventDefault(); // Предотвращаем отправку формы
-    //         const elements = document.querySelectorAll(`.${targetClassName}`);
-    //         elements.forEach(element => {
-    //             element.style[styleProperty] = colorInput.value;
-    //         });
-    //     });
-    // } 
-
     // Применение цвета фона
     applyColor('backgroundColor', 'window-view', 'backgroundColor');
 
