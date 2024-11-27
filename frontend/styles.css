@@ -451,3 +451,45 @@ input{
   vertical-align: middle; 
 }
 
+.header-major{
+  display: flex;
+  justify-content: space-between;
+
+}
+
+.left-elements {
+  display: flex;
+  gap: 12px;
+  align-items: center;
+  height: 74px;
+}
+
+.right-elements{
+  display: flex;
+  gap: 62px;
+  align-items: center;
+  height: 74px;
+  font-weight: 400;
+  font-size: 18px;
+  line-height: 24px;
+  color:var(--color-grey-middle);
+  padding-right: 30px;
+}
+
+.go-away{
+  color: var(--color-grey-middle);
+  display: inline-flex;
+  align-items: center;
+}
+
+.go-away::after{
+  content: "";
+  width: 5px;
+  height: 10px;
+  margin-left: 10px;
+  background-image: url(./icons/arrow-other.svg);
+  background-size: cover;
+  display: inline-block; 
+  vertical-align: middle; 
+
+}
