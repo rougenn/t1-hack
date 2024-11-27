@@ -1,0 +1,8 @@
+{
+    "model_name": "aue",
+    "database_path": "base/data.txt",
+    "chunk_size": 512,
+    "chunk_overlap": 50,
+    "embeddings_model_id": "intfloat/multilingual-e5-large",
+    "llm_model_id": "llama3.2:3b-instruct-fp16"
+}

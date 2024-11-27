@@ -13,11 +13,13 @@ type Admin struct {
 	CreatedAt    int64  `json:"created_at"` // время создания юникс
 }
 
+// Структура запроса для логина
 type LoginRequest struct {
 	Email    string `json:"email" binding:"required,email"`
 	Password string `json:"password" binding:"required"`
 }
 
+// Структура запроса для регистрации
 type RegisterRequest struct {
 	Email    string `json:"email" binding:"required,email"`
 	Password string `json:"password" binding:"required,min=8"`

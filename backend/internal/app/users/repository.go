@@ -3,6 +3,7 @@ package users
 import (
 	"database/sql"
 	"t1/internal/app/models"
+	"time"
 )
 
 func AddToDB(db *sql.DB, user models.Admin) (int, int64, error) {
@@ -12,10 +13,10 @@ func AddToDB(db *sql.DB, user models.Admin) (int, int64, error) {
     RETURNING id, created_at
 	`
 	var id int
-	var createdAt int64
+	var createdAt time.Time
 	err := db.QueryRow(query, user.Email, user.PasswordHash).Scan(&id, &createdAt)
 	if err != nil {
-		return 0, 0, err
+		return 0, time.Time{}, err
 	}
 	return id, createdAt, nil
 }
