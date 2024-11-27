@@ -9,10 +9,44 @@
     <script src="./scripts.js" defer></script>
 </head>
 <body>
-    <header class="header">
+    <header class="header header-major">
         <img src="./icons/YSL-logo.svg" alt="" class="header-logo">
         <p class="header-slogan">Все ответы в одном месте.</p>
     </header>
-    
+    <main class="major-page">
+        <section class="settings">
+            <h2 class="major-title">Настройки ассистента</h2>
+            <h3 class="base-knowledge">БАЗА ЗНАНИЙ</h3>
+            <p class="base-description">Добавьте свою базу знаний в 
+                удобном формате. Поддержка баз знаний разных типов: 
+                текстовые документы (pdf, docx, txt), 
+                URL, Notion, Confluence.</p>
+            <form action="" class="knowledge-base-form" method="post" id="knowledgeBaseForm">
+                <div class="input-group">
+                    <label for="url"></label>
+                    <input type="url" id="url" name="url" placeholder="URL">
+                </div>
+                <div class="input-group">
+                    <label for="document"></label>
+                    <input type="file" id="document" name="document" accept=".pdf,.docx,.txt" placeholder="Документ">
+                </div>
+                <div class="input-group">
+                    <label for="notion"></label>
+                    <input type="url" id="notion" name="notion" placeholder="Notion">
+                </div>
+                <div class="input-group">
+                    <label for="confluence"></label>
+                    <input type="url" id="confluence" name="confluence" placeholder="Confluence">
+                </div>
+            </form>
+        </section>
+        <section class="viewport">
+            <h2 class="major-title">Просмотр решения</h2>
+            <div class="major-view-buttons">
+                <button class="major-save">Сохранить</button>
+                <button class="major-export">Экспорт</button>
+
+            </div>
+        </section>
 </body>
 </html>
