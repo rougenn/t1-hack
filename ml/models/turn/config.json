@@ -1,6 +1,6 @@
 {
-    "model_name": "aue",
-    "database_path": "base/data.txt",
+    "model_name": "turn",
+    "database_path": "bases/base_2",
     "chunk_size": 512,
     "chunk_overlap": 50,
     "embeddings_model_id": "intfloat/multilingual-e5-large",
