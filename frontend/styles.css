@@ -806,3 +806,49 @@ input:focus{
   border-radius: 5px;
   color: var(--color-grey-text);
 }
+
+.message {
+  padding: 10px;
+  margin: 5px;
+  border-radius: 15px;
+  max-width: 70%;
+  clear: both;
+  word-wrap: break-word;
+  position: relative;
+}
+
+.message.user {
+  background-color: #05AAE6;
+  color: white;
+  align-self: flex-end;
+  margin-right: 10px;
+}
+
+.message.assistant {
+  background-color: #0072C9;
+  color: white;
+  align-self: flex-start;
+  margin-left: 10px;
+}
+
+.message.error {
+  background-color: #FF4136;
+  color: white;
+  text-align: center;
+  margin: 0 auto;
+}
+
+.dialog {
+  overflow-y: auto;
+  height: 300px; /* Установите нужную высоту */
+  padding: 10px;
+  display: flex;
+  flex-direction: column;
+  width: 100%; /* Убедитесь, что контейнер имеет достаточную ширину */
+}
+
+.dialog::after {
+  content: '';
+  display: table;
+  clear: both;
+}

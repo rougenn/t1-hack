@@ -173,10 +173,10 @@
             <div id="window-view" class="window-view">
                 <div id="header-window" class="header-window">Название ассистента</div>
                 <div id="dialog" class="dialog"></div>
-                <div class="window-ask" id="window-ask">
-                    <input type="text" class="input-message" id="message" placeholder="Введите сообщение...">
-                    <button id="send-btn">Отправить</button>
-                </div>
+                <form action="/submit-message" class="window-ask" id="window-ask">
+                    <input type="text" name="message" id="message" placeholder="Написать запрос" class="input-message">
+                    <button id="applyMessage" class="base-submit"></button>
+                </form>
             </div>
         </section>
 </body>

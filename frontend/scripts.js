@@ -1,40 +1,3 @@
-// document.addEventListener('DOMContentLoaded', function() {
-
-//     /* chat-bot */
-//     const messagesContainer = document.getElementById('dialog');
-//     const userInput = document.getElementById('message');
-//     const sendButton = document.getElementById('send-btn');
-
-//     function addMessage(sender, text) {
-//         const messageDiv = document.createElement('div');
-//         messageDiv.classList.add(sender === 'bot' ? 'bot-message' : 'user-message');
-//         messageDiv.textContent = text;
-//         messagesContainer.appendChild(messageDiv);
-//         messagesContainer.scrollTop = messagesContainer.scrollHeight; // Скролл вниз
-//     }
-
-//     sendButton.addEventListener('click', () => {
-//         const userText = userInput.value.trim();
-//         if (userText === '') return;
-
-//         addMessage('user', userText);
-//         userInput.value = '';
-
-//         // Пример ответа бота
-//         setTimeout(() => {
-//             addMessage('bot', 'Это пример ответа от чат-бота!');
-//         }, 500);
-//     });
-
-//     // Отправка сообщения при нажатии Enter
-//     userInput.addEventListener('keydown', (event) => {
-//         if (event.key === 'Enter') {
-//             sendButton.click();
-//         }
-//     });
-// });
-
-
 document.addEventListener('DOMContentLoaded', function() {
     const fontForm = document.getElementById('customFont');
     const fontInput = document.getElementById('font');
@@ -44,6 +7,12 @@ document.addEventListener('DOMContentLoaded', function() {
     const messageInput = document.getElementById('message');
     const logoInput = document.getElementById('logo');
     const logoImage = document.querySelector('.img-example');
+
+    // Проверка наличия кнопки
+    const applyMessageButton = document.getElementById('applyMessage');
+    if (!applyMessageButton) {
+        console.error('Кнопка с ID "applyMessage" не найдена');
+    }
 
     fontForm.addEventListener('submit', function(event) {
         event.preventDefault(); // Предотвращаем отправку формы
@@ -75,6 +44,7 @@ document.addEventListener('DOMContentLoaded', function() {
         });
     }
 
+    // Функция для применения цвета
     function applyColor(colorInputId, targetElementId, styleProperty) {
         const colorInput = document.getElementById(colorInputId);
         const targetElement = document.getElementById(targetElementId);
@@ -128,6 +98,12 @@ document.addEventListener('DOMContentLoaded', function() {
         }
     });
 
+    applyMessageButton.addEventListener('click', function(event) {
+        event.preventDefault(); // Предотвращаем отправку формы
+        console.log('Кнопка нажата'); // Отладочное сообщение
+        sendMessage();
+    });
+
     function sendMessage() {
         const userMessage = messageInput.value.trim();
         if (userMessage === '') return;
@@ -146,25 +122,31 @@ document.addEventListener('DOMContentLoaded', function() {
         // Прокручиваем диалог вниз, чтобы видеть последнее сообщение
         dialog.scrollTop = dialog.scrollHeight;
 
-        // Здесь можно добавить логику для отправки сообщения на сервер и получения ответа от ассистента
-        // Например, с помощью fetch или axios
-        // Пример:
-        // fetch('/api/assistant', {
-        //     method: 'POST',
-        //     headers: {
-        //         'Content-Type': 'application/json'
-        //     },
-        //     body: JSON.stringify({ message: userMessage })
-        // })
-        // .then(response => response.json())
-        // .then(data => {
-        //     const assistantMessage = data.response;
-        //     const assistantMessageElement = document.createElement('div');
-        //     assistantMessageElement.className = 'message assistant';
-        //     assistantMessageElement.textContent = assistantMessage;
-        //     dialog.appendChild(assistantMessageElement);
-        //     dialog.scrollTop = dialog.scrollHeight;
-        // });
+        // Отправляем сообщение на сервер и получаем ответ от ассистента
+        fetch('/api/assistant', {
+            method: 'POST',
+            headers: {
+                'Content-Type': 'application/json'
+            },
+            body: JSON.stringify({ message: userMessage })
+        })
+        .then(response => response.json())
+        .then(data => {
+            const assistantMessage = data.response;
+            const assistantMessageElement = document.createElement('div');
+            assistantMessageElement.className = 'message assistant';
+            assistantMessageElement.textContent = assistantMessage;
+            dialog.appendChild(assistantMessageElement);
+            dialog.scrollTop = dialog.scrollHeight;
+        })
+        .catch(error => {
+            console.error('Ошибка при отправке сообщения:', error);
+            const errorMessageElement = document.createElement('div');
+            errorMessageElement.className = 'message error';
+            errorMessageElement.textContent = 'Ошибка при отправке сообщения';
+            dialog.appendChild(errorMessageElement);
+            dialog.scrollTop = dialog.scrollHeight;
+        });
     }
 
     // Обработка загрузки изображения
