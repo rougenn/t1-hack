@@ -299,15 +299,30 @@ input{
 
 
 .major-page{
-  display: grid;
+  /* display: grid;
   grid-template-columns: 38vw auto;
-  border: 1px solid var(--color-border);
+  border: 1px solid var(--color-border); */
+  padding-top: 6vw;
+  display: flex;  /* Используем flexbox для выравнивания секций */
+  height: 100vh;  /* Задаем общий размер для контейнера */
 }
 
-.settings{
+.settings {
+  padding: 1.5vw;
+  width: 60vw;
+  position: relative;
   background-color: var(--color-background-grey);
   border-right: 1px solid var(--color-border);
   min-height: 100vh;
+  overflow-y: auto;
+}
+
+.base-of-knowledge {
+  width: 100%;
+}
+
+.custom {
+  width: 100%;
 }
 
 .major-title{
@@ -322,8 +337,7 @@ input{
   font-weight: 700;
   font-size: 20px;
   line-height: 27px;
-  padding-left: 30px;
-  margin-top: 20px;
+  margin-top: 1vw;
   color: var(--color-main);
 }
 
@@ -331,20 +345,20 @@ input{
   font-weight: 400;
   font-size: 17px;
   line-height: 23px;
-  padding-left: 30px;
-  padding-right: 30px;
-  margin-top: 10px;
+  /* padding-left: 30px; */
+  /* padding-right: 30px; */
+  margin-top: 1vw;
   color: var(--color-grey-text);
 }
 
 .knowledge-base-form{
-  padding-left: 30px;
-  margin-top: 20px;
+  /* padding-left: 30px; */
+  margin-top: 1vw;
   display: flex;
   flex-direction: column;
   align-items: flex-start;
   width: 34vw;
-  gap: 15px;
+  gap: 1vw;
 }
 .base-form{
   display: flex;
@@ -378,13 +392,11 @@ input::placeholder{
 }
 
 .name-custom{
-  margin-top: 20px;
-  padding-left: 30px;
+  margin-top: 1vw;
 }
 
 .description-custom{
-  margin-top: 20px;
-  padding-left: 30px;
+  margin-top: 1vw;
 }
 
 .custom-title{
@@ -471,9 +483,8 @@ textarea::placeholder{
   font-weight: 700;
   font-size: 18px;
   line-height: 24px;
-  display: inline-flex;
   align-items: center; 
-  padding-left: 15px;
+  text-align: center;
   box-shadow: 0px 2px 2px 0px rgba(0, 0, 0, 0.25)
 }
 
@@ -491,7 +502,13 @@ textarea::placeholder{
 .header-major{
   display: flex;
   justify-content: space-between;
-
+  position: fixed;
+  z-index: 100;
+  background-color: var(--color-white);
+  border-bottom: 1px solid var(--color-border);
+  width: 100%;
+  /* height: 4vw; */
+  height: auto;
 }
 
 .left-elements {
@@ -532,8 +549,7 @@ textarea::placeholder{
 }
 
 .logo-custom{
-  padding-left: 30px;
-  margin-top: 20px;
+  margin-top: 1vw;
 }
 
 
@@ -546,6 +562,7 @@ textarea::placeholder{
 .img-example{
   width: 60px;
   height: 60px;
+  border-radius: 50%;
 }
 
 .custom-logo{
@@ -554,13 +571,13 @@ textarea::placeholder{
 }
 
 .font-custom{
-  margin-top: 20px;
-  padding-left: 30px;
+  margin-top: 1vw;
 }
 
 textarea{
   width: 34vw;
-  min-height: 8vw;
+  max-height: 8vw;
+  min-height: 3vw;
   background-color: var(--color-white);
 }
 
@@ -573,7 +590,7 @@ textarea{
   grid-template-columns: repeat(2, 15vw);
   grid-template-rows: repeat(2, 61px);
   gap: 32px;
-  padding-left: 30px;
+  padding-left: 7vw;
   margin-top: 20px;
 }
 
@@ -586,9 +603,11 @@ textarea{
 
 /* viewport */
 .viewport {
-  padding: 1vw;
+  padding: 1.5vw;
   width: 100%;
   position: relative;
+  height: 100vh; /* Фиксируем высоту секции */
+  overflow: hidden; /* Блокируем прокрутку */
 }
 
 
@@ -665,7 +684,7 @@ input:focus{
   overflow-y: auto; /* Включаем вертикальную прокрутку */
   padding: 1vw;
   gap: 1vw;
-  padding-bottom: 8vw;
+  padding-bottom: 3vw;
 }
 
 #dialog::-webkit-scrollbar {
@@ -720,4 +739,56 @@ input:focus{
   text-align: right;
   margin-left: auto; /* Прижимается к правой стороне */
   border: 1px solid var(--color-border);
+}
+
+
+
+#documentForm div {
+  position: relative;
+  z-index: 10;
+}
+
+#documentForm input[type=file] {
+  width: 0.1px;
+  height: 0.1px;
+  opacity: 0;
+  position: absolute;
+  z-index: -10;
+}
+
+.custom-file-upload {
+  color: var(--color-white);
+  border: 1px solid var(--color-border-light);
+  border-radius: 5px;
+  font-size: 12px;
+  background-color: var(--color-main);
+  cursor: pointer;
+  padding: 5px 5px;
+}
+
+
+#customLogo div {
+  position: relative;
+  z-index: 10;
+}
+
+#customLogo input[type=file] {
+  width: 0.1px;
+  height: 0.1px;
+  opacity: 0;
+  position: absolute;
+  z-index: -10;
+}
+
+#customFont div {
+  position: relative;
+  z-index: 10;
+}
+
+#customFont input[type=file] {
+  width: 0.1px;
+  height: 0.1px;
+  opacity: 0;
+  position: absolute;
+  z-index: -10;
 }

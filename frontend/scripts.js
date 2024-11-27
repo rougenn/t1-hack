@@ -110,6 +110,8 @@ document.addEventListener('DOMContentLoaded', function() {
     const dialog = document.getElementById('dialog');
     const headerWindow = document.getElementById('header-window');
     const messageInput = document.getElementById('message');
+    const logoInput = document.getElementById('logo');
+    const logoImage = document.querySelector('.img-example');
 
     fontForm.addEventListener('submit', function(event) {
         event.preventDefault(); // Предотвращаем отправку формы
