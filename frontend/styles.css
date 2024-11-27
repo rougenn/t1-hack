@@ -641,7 +641,7 @@ textarea{
   padding: 1vw 2vw;
   width: 100%;
   height: auto;
-  background-color: var(--color-white);
+  background-color: var(--color-white) !important;
   position: absolute;
   bottom: 0;
   left: 0;
@@ -651,6 +651,7 @@ textarea{
 
 .input-message{
   width: 100%;
+  background-color: var(--color-white) !important;
 }
 
 .input-message::placeholder{
@@ -789,4 +790,19 @@ input:focus{
   opacity: 0;
   position: absolute;
   z-index: -10;
+}
+
+.llms{
+  margin-top: 20px;
+
+}
+
+.form-llm{
+  margin-top: 5px;
+}
+
+.llm-select{
+  border: 1px solid var(--color-border-light);
+  border-radius: 5px;
+  color: var(--color-grey-text);
 }
