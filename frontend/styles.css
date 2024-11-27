@@ -791,3 +791,18 @@ input:focus{
   position: absolute;
   z-index: -10;
 }
+
+.llms{
+  margin-top: 20px;
+
+}
+
+.form-llm{
+  margin-top: 5px;
+}
+
+.llm-select{
+  border: 1px solid var(--color-border-light);
+  border-radius: 5px;
+  color: var(--color-grey-text);
+}

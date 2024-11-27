@@ -1,3 +1,40 @@
+// document.addEventListener('DOMContentLoaded', function() {
+
+//     /* chat-bot */
+//     const messagesContainer = document.getElementById('dialog');
+//     const userInput = document.getElementById('message');
+//     const sendButton = document.getElementById('send-btn');
+
+//     function addMessage(sender, text) {
+//         const messageDiv = document.createElement('div');
+//         messageDiv.classList.add(sender === 'bot' ? 'bot-message' : 'user-message');
+//         messageDiv.textContent = text;
+//         messagesContainer.appendChild(messageDiv);
+//         messagesContainer.scrollTop = messagesContainer.scrollHeight; // Скролл вниз
+//     }
+
+//     sendButton.addEventListener('click', () => {
+//         const userText = userInput.value.trim();
+//         if (userText === '') return;
+
+//         addMessage('user', userText);
+//         userInput.value = '';
+
+//         // Пример ответа бота
+//         setTimeout(() => {
+//             addMessage('bot', 'Это пример ответа от чат-бота!');
+//         }, 500);
+//     });
+
+//     // Отправка сообщения при нажатии Enter
+//     userInput.addEventListener('keydown', (event) => {
+//         if (event.key === 'Enter') {
+//             sendButton.click();
+//         }
+//     });
+// });
+
+
 document.addEventListener('DOMContentLoaded', function() {
     const fontForm = document.getElementById('customFont');
     const fontInput = document.getElementById('font');
