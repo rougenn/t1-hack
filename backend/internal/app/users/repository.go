@@ -7,8 +7,8 @@ import (
 
 func AddToDB(db *sql.DB, user models.Admin) (int, int64, error) {
 	query := `
-    INSERT INTO admins (first_name, second_name, company_name, email, phone_number, password_hash)
-    VALUES ($1, $2, $3, $4, $5, $6)
+    INSERT INTO admins (email, password_hash)
+    VALUES ($1, $2)
     RETURNING id, created_at
 	`
 	var id int

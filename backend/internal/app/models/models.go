@@ -1,5 +1,11 @@
 package models
 
+import (
+	"mime/multipart"
+
+	"github.com/gin-gonic/gin"
+)
+
 type Admin struct {
 	ID           int    `json:"id"`
 	Email        string `json:"email"`
@@ -15,4 +21,11 @@ type LoginRequest struct {
 type RegisterRequest struct {
 	Email    string `json:"email" binding:"required,email"`
 	Password string `json:"password" binding:"required,min=8"`
+}
+
+// Модель запроса для создания ассистента
+type AssistantRequest struct {
+	URL   string          `json:"url" binding:"required"` // URL для ассистента
+	Files *multipart.Form `json:"files"`                  // Файлы, передаваемые в запросе
+	Ctx   *gin.Context    `json:"-"`                      // Контекст для доступа к файлам
 }

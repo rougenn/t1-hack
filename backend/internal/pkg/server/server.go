@@ -3,14 +3,15 @@ package server
 import (
 	"database/sql"
 	"errors"
-	"log"
 	"net/http"
+	"t1/internal/app/assistants"
 	"t1/internal/app/models"
 	"t1/internal/app/users"
 	"t1/internal/pkg/db"
 
 	"github.com/gin-contrib/cors"
 	"github.com/gin-gonic/gin"
+	"go.uber.org/zap"
 )
 
 var (
@@ -20,22 +21,35 @@ var (
 )
 
 type Server struct {
-	host string
-	DB   *sql.DB
+	host   string
+	DB     *sql.DB
+	logger *zap.Logger // Логгер теперь является частью структуры Server
 }
 
+// Новый конструктор сервера, который создает логгер
 func New(host string) *Server {
 	database := db.NewDB()
 
+	// Создаем новый логгер
+	logger, err := zap.NewProduction() // Можно также использовать zap.NewDevelopment() для менее формального логирования
+	if err != nil {
+		panic("failed to initialize zap logger")
+	}
+
 	s := Server{
-		host: host,
-		DB:   database,
+		host:   host,
+		DB:     database,
+		logger: logger, // Передаем логгер в структуру
 	}
 	return &s
 }
 
 func (r *Server) Stop() {
 	r.DB.Close()
+	// Закрытие логгера
+	if err := r.logger.Sync(); err != nil {
+		r.logger.Error("Error syncing logger", zap.Error(err))
+	}
 }
 
 func (r *Server) newAPI() *gin.Engine {
@@ -56,12 +70,10 @@ func (r *Server) newAPI() *gin.Engine {
 	engine.POST("/api/admin/login", r.LogIn)
 	engine.POST("/api/admin/signup", r.Register)
 	engine.POST("/api/admin/refresh-token", r.RefreshToken)
-	engine.POST("/api/admin/create-manager", r.CreateManager) // надо реализовать загрузку файла\файлов в запросе
-	// + генерацию ссылки + генерацию уникального айди(его можно в ссылке использовать)
 
-	engine.POST("/api/get-chat/:id", r.GetChat) // просто должны подгружать страничку
-
-	engine.POST("/api/chats/:id/send", r.SendMessage) // тут тебе просто кидают запрос с фронта уже в чате
+	engine.POST("/api/admin/create-chat-assistant", r.CreateChatAssistant) // реализация загрузки файлов
+	engine.POST("/api/get-chat/:id", r.GetChat)                            // подгрузка страницы чата
+	engine.POST("/api/chats/:id/send", r.SendMessage)                      // запросы и сообщения в чате
 
 	protected := engine.Group("/api/")
 	protected.Use(AuthMiddleware())
@@ -69,20 +81,57 @@ func (r *Server) newAPI() *gin.Engine {
 	return engine
 }
 
-func (r *Server) CreateManager(ctx *gin.Context) {
+func (r *Server) CreateChatAssistant(ctx *gin.Context) {
+	userID := getUserIDFromContext(ctx)
 
+	var req models.AssistantRequest
+	if err := ctx.ShouldBindJSON(&req); err != nil {
+		// Логируем ошибку с помощью zap
+		r.logger.Error("Error parsing request body", zap.Error(err))
+		ctx.JSON(http.StatusBadRequest, gin.H{"error": err.Error()})
+		return
+	}
+
+	// Передаем контекст ctx как аргумент в функцию для создания ассистента
+	assistantID, err := assistants.CreateChatAssistant(r.DB, userID, req, ctx)
+	if err != nil {
+		// Логируем ошибку с помощью zap
+		r.logger.Error("Error creating assistant", zap.Error(err))
+		ctx.JSON(http.StatusInternalServerError, gin.H{"error": "Failed to create assistant"})
+		return
+	}
+
+	// Временно закомментировали отправку в Kafka
+	// Отправляем запрос в Kafka
+	/*
+		err = kafka.SendToKafka("chat-assistants", assistantID, nil)
+		if err != nil {
+			// Логируем ошибку с помощью zap
+			r.logger.Error("Error sending to Kafka", zap.Error(err))
+			ctx.JSON(http.StatusInternalServerError, gin.H{"error": "Failed to send to Kafka"})
+			return
+		}
+	*/
+
+	// Временно отправляем ответ напрямую, без отправки в Kafka
+	ctx.JSON(http.StatusOK, gin.H{"assistant_id": assistantID})
 }
+
+func (r *Server) GetChat(ctx *gin.Context) {}
+
+func (r *Server) SendMessage(ctx *gin.Context) {}
 
 func (r *Server) Start() {
 	err := r.newAPI().Run(r.host)
 	if err != nil {
-		log.Fatalf("Failed to start server: %v", err)
+		r.logger.Fatal("Failed to start server", zap.Error(err))
 	}
 }
 
 func (r *Server) LogIn(ctx *gin.Context) {
 	var req models.LoginRequest
 	if err := ctx.ShouldBindJSON(&req); err != nil {
+		r.logger.Error("Error binding login request", zap.Error(err))
 		ctx.JSON(http.StatusBadRequest, gin.H{"error": err.Error()})
 		return
 	}
@@ -90,9 +139,11 @@ func (r *Server) LogIn(ctx *gin.Context) {
 	user, err := users.SignIn(r.DB, req.Email, req.Password)
 	if err != nil {
 		if errors.Is(err, users.ErrIncorrectData) {
+			r.logger.Warn("Incorrect login attempt", zap.String("email", req.Email))
 			ctx.JSON(http.StatusUnauthorized, gin.H{"error": err.Error()})
 			return
 		}
+		r.logger.Error("Error signing in", zap.Error(err))
 		ctx.JSON(http.StatusInternalServerError, gin.H{"error": err.Error()})
 		return
 	}
@@ -100,12 +151,14 @@ func (r *Server) LogIn(ctx *gin.Context) {
 	// Генерация Access и Refresh токенов
 	accessToken, err := GenerateAccessToken(user.ID)
 	if err != nil {
+		r.logger.Error("Failed to generate access token", zap.Error(err))
 		ctx.JSON(http.StatusInternalServerError, gin.H{"error": "Failed to generate access token"})
 		return
 	}
 
 	refreshToken, err := GenerateRefreshToken(user.ID)
 	if err != nil {
+		r.logger.Error("Failed to generate refresh token", zap.Error(err))
 		ctx.JSON(http.StatusInternalServerError, gin.H{"error": "Failed to generate refresh token"})
 		return
 	}
@@ -120,6 +173,7 @@ func (r *Server) LogIn(ctx *gin.Context) {
 func (r *Server) Register(ctx *gin.Context) {
 	var req models.RegisterRequest
 	if err := ctx.ShouldBindJSON(&req); err != nil {
+		r.logger.Error("Error binding registration request", zap.Error(err))
 		ctx.JSON(http.StatusBadRequest, gin.H{"error": err.Error()})
 		return
 	}
@@ -127,9 +181,11 @@ func (r *Server) Register(ctx *gin.Context) {
 	user, err := users.Register(r.DB, req)
 	if err != nil {
 		if errors.Is(err, users.ErrAlreadyExists) {
+			r.logger.Warn("User already exists", zap.String("email", req.Email))
 			ctx.JSON(http.StatusConflict, gin.H{"error": err.Error()})
 			return
 		}
+		r.logger.Error("Error registering user", zap.Error(err))
 		ctx.JSON(http.StatusInternalServerError, gin.H{"error": err.Error()})
 		return
 	}
