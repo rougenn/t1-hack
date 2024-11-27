@@ -308,6 +308,7 @@ input{
   background-color: var(--color-background-grey);
   border-right: 1px solid var(--color-border);
   min-height: 100vh;
+  padding-bottom: 46px;
 }
 
 .major-title{
@@ -560,7 +561,8 @@ textarea::placeholder{
 
 textarea{
   width: 34vw;
-  min-height: 8vw;
+  max-height: 8vw;
+  min-height: 3vw;
   background-color: var(--color-white);
 }
 
@@ -573,7 +575,7 @@ textarea{
   grid-template-columns: repeat(2, 15vw);
   grid-template-rows: repeat(2, 61px);
   gap: 32px;
-  padding-left: 30px;
+  padding-left: 7vw;
   margin-top: 20px;
 }
 
