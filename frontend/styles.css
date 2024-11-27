@@ -299,16 +299,13 @@ input{
 
 
 .major-page{
-  /* display: grid;
-  grid-template-columns: 38vw auto;
-  border: 1px solid var(--color-border); */
-  padding-top: 6vw;
   display: flex;  /* Используем flexbox для выравнивания секций */
   height: 100vh;  /* Задаем общий размер для контейнера */
 }
 
 .settings {
   padding: 1.5vw;
+  padding-top: 6vw;
   width: 60vw;
   position: relative;
   background-color: var(--color-background-grey);
@@ -604,6 +601,7 @@ textarea{
 /* viewport */
 .viewport {
   padding: 1.5vw;
+  padding-top: 6vw;
   width: 100%;
   position: relative;
   height: 100vh; /* Фиксируем высоту секции */
