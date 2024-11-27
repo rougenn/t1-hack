@@ -1,3 +1,17 @@
+-- Удаление таблиц, если они существуют
+DROP TABLE IF EXISTS assistant_statistics CASCADE;
+DROP TABLE IF EXISTS assistant_links CASCADE;
+DROP TABLE IF EXISTS admins CASCADE;
+
+
+-- Создание таблицы для администраторов
+CREATE TABLE IF NOT EXISTS admins (
+    id UUID PRIMARY KEY,       -- Используем UUID для уникальности
+    name TEXT NOT NULL,         -- Имя администратора
+    email TEXT NOT NULL UNIQUE  -- Электронная почта администратора
+);
+
+
 -- Создание таблицы для хранения ссылок
 CREATE TABLE IF NOT EXISTS assistant_links (
     id SERIAL PRIMARY KEY,               -- Уникальный идентификатор ссылки
@@ -7,6 +21,7 @@ CREATE TABLE IF NOT EXISTS assistant_links (
     updated_at BIGINT DEFAULT (EXTRACT(EPOCH FROM now())::BIGINT), -- Время последнего обновления
     FOREIGN KEY (assistant_id) REFERENCES admins(id) ON DELETE CASCADE -- Связь с таблицей админов
 );
+
 
 -- Таблица для статистики запросов и ответов
 CREATE TABLE IF NOT EXISTS assistant_statistics (

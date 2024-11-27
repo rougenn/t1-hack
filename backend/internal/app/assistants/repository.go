@@ -5,6 +5,16 @@ import (
 	"fmt"
 )
 
+// SaveMessageToDB сохраняет сообщение в базе данных
+func SaveMessageToDB(db *sql.DB, assistantID, userID int, message string) error {
+	query := `
+		INSERT INTO message_history (assistant_id, user_id, message, created_at)
+		VALUES ($1, $2, $3, NOW())
+	`
+	_, err := db.Exec(query, assistantID, userID, message)
+	return err
+}
+
 // Функция для добавления ссылки ассистента в таблицу
 func AddAssistantLink(DB *sql.DB, userID int, assistantID, url string) (int, error) {
 	query := `

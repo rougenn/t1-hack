@@ -5,8 +5,9 @@ import (
 	"errors"
 	"fmt"
 	"t1/internal/app/models"
-	"golang.org/x/crypto/bcrypt"
 	_ "time"
+
+	"golang.org/x/crypto/bcrypt"
 )
 
 var (

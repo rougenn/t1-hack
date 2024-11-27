@@ -31,3 +31,7 @@ type AssistantRequest struct {
 	Files *multipart.Form `json:"files"`                  // Файлы, передаваемые в запросе
 	Ctx   *gin.Context    `json:"-"`                      // Контекст для доступа к файлам
 }
+
+type SendMessageRequest struct {
+	Message string `json:"message" binding:"required"`
+}
