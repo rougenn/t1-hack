@@ -307,7 +307,7 @@ input{
 .settings{
   background-color: var(--color-background-grey);
   border-right: 1px solid var(--color-border);
-  height: 100vh;
+  min-height: 100vh;
 }
 
 .major-title{
@@ -345,33 +345,71 @@ input{
   align-items: flex-start;
   width: 34vw;
   gap: 15px;
-  
 }
-.input-group{
-  height: 40px;
-  width: 32vw;
-  padding-left: 15px;
+.base-form{
   display: flex;
-  flex-direction: column;
+  gap: 15px;
 }
 
-.input-group label {
-    font-weight: 500;
-    font-size: 18px;
-    line-height: 24px;
-    color: var(--color-grey-text);
-    margin-bottom: 5px; 
+.input-group{
+  width: 33vw;
+  height: 40px;
+  border: 1px solid var(--color-border-light);
+  border-radius: 5px;
+  background-color: var(--color-white);
+  padding-top: 5px;
+  padding-left: 15px;
 }
 
-.input-group input[type="file"],
-.input-group input[type="url"] {
-    font-size: 16px;
-    line-height: 24px;
-    color: var(--color-grey-light);
-    border: 1px solid var(--color-grey-light);
-    border-radius: 5px;
-    padding: 10px;
-    width: 100%;
+input::placeholder{
+  color: var(--color-grey-light);
+  font-size: 12px;
+  line-height: 16px;
+}
+
+.base-submit{
+  background-image: url(./icons/submit.svg);
+  width: 15px;
+  height: 15px;
+  border: none;
+  background-color: transparent;
+  margin-top: 13px;
+  background-repeat: no-repeat;
+}
+
+.name-custom{
+  margin-top: 20px;
+  padding-left: 30px;
+}
+
+.description-custom{
+  margin-top: 20px;
+  padding-left: 30px;
+}
+
+.custom-title{
+  font-weight: 500;
+  font-size: 12px;
+  line-height: 16px;
+  color: var(--color-grey-middle);
+  margin-bottom: 4px;
+}
+
+.description-form textarea{
+  height: 124px;
+  width: 100%;
+  box-sizing: border-box;
+  resize: none;
+  border: none;
+  background: none;
+}
+
+.description-form textarea::placeholder {
+  font-size: 12px;
+  line-height: 16px;
+  color: var(--color-grey-light);
+  opacity: 1;
+  overflow: hidden;
 }
 
 .submit-button {
@@ -493,3 +531,5 @@ input{
   vertical-align: middle; 
 
 }
+
+
