@@ -165,15 +165,12 @@
                 <button class="major-save">Сохранить</button>
                 <button class="major-export">Экспорт</button>
             </div>
-            <div class="window-view" id="window-view">
-                <div class="header-window" id="header-window">
-                    Название ассистента
-                </div>
-                <div class="dialog" id="dialog">
-                    <!-- Здесь будет диалог -->
-                </div>
+            <div id="window-view" class="window-view">
+                <div id="header-window" class="header-window">Название ассистента</div>
+                <div id="dialog" class="dialog"></div>
                 <div class="window-ask" id="window-ask">
-                    <input type="text" name="message" id="message" placeholder="Написать запрос" class="input-message">
+                    <input type="text" class="input-message" id="message" placeholder="Введите сообщение...">
+                    <button id="send-btn">Отправить</button>
                 </div>
             </div>
         </section>
