@@ -567,3 +567,19 @@ textarea{
 .input-custom{
   width: 30vw;
 }
+
+.color-custom{
+  display: grid;
+  grid-template-columns: repeat(2, 15vw);
+  grid-template-rows: repeat(2, 61px);
+  gap: 32px;
+  padding-left: 30px;
+  margin-top: 20px;
+}
+
+.color-custom-input{
+  width: 40px;
+  height: 40px;
+  border: 1px solid var(--color-border-light);
+  border-radius: 5px;
+}
