@@ -60,7 +60,6 @@ func (r *Server) newAPI() *gin.Engine {
 	engine.POST("/api/admin/login", r.LogIn)
 	engine.POST("/api/admin/signup", r.Register)
 	engine.POST("/api/admin/refresh-token", r.RefreshToken)
-<<<<<<< Updated upstream
 	engine.POST("/api/admin/create-manager", r.CreateManager) // надо реализовать загрузку файла\файлов в запросе
 	// + генерацию ссылки + генерацию уникального айди(его можно в ссылке использовать)
 
@@ -68,7 +67,7 @@ func (r *Server) newAPI() *gin.Engine {
 
 	engine.POST("/api/chats/:id/send", r.SendMessage) // тут тебе просто кидают запрос с фронта уже в чате
 
-=======
+
 	engine.POST("/api/user/create-manager", r.CreateManager)
 	engine.POST("/api/admin/create-manager", r.CreateManager) 
 	// надо реализовать загрузку файла\файлов в запросе
@@ -76,7 +75,7 @@ func (r *Server) newAPI() *gin.Engine {
 	engine.GET("/api/get-chat/:id", r.GetChat) // исправлено на GET
 	engine.POST("/api/chats/:id/send", r.SendMessage) // тут тебе просто кидают запрос с фронта уже в чате
 	engine.POST("/api/chats", r.CreateChat)
->>>>>>> Stashed changes
+
 	protected := engine.Group("/api/")
 	protected.Use(AuthMiddleware())
 
