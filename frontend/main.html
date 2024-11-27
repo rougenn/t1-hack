@@ -33,7 +33,7 @@
                         <form action="/submit-url" method="post" class="base-form" id="urlForm">
                             <div class="input-group input-url">
                                 <label for="url"></label>
-                                <input type="url" id="url" name="url" placeholder="URL" class="base-placeholder placeholder-url">
+                                <input type="url" id="url" name="url" placeholder="URL" class="base-placeholder placeholder-url input-custom">
                             </div>
                             <button type="submit" class="base-submit"></button>
                         </form>
@@ -42,7 +42,7 @@
                         <form action="/submit-document" method="post" enctype="multipart/form-data" class="base-form" id="documentForm">
                             <div class="input-group input-document">
                                 <label for="document"></label>
-                                <input type="file" id="document" name="document" accept=".pdf,.docx,.txt" placeholder="Документ" class="base-placeholder placeholder-doc">
+                                <input type="file" id="document" name="document" accept=".pdf,.docx,.txt" placeholder="Документ" class="base-placeholder placeholder-doc input-custom">
                             </div>
                             <button type="submit" class="base-submit"></button>
                         </form>
@@ -51,7 +51,7 @@
                         <form action="/submit-notion" method="post" class="base-form" id="notionForm">
                             <div class="input-group input-notion">
                                 <label for="notion"></label>
-                                <input type="url" id="notion" name="notion" placeholder="Notion" class="base-placeholder placeholder-notion">
+                                <input type="url" id="notion" name="notion" placeholder="Notion" class="base-placeholder placeholder-notion input-custom">
                             </div>
                             <button type="submit" class="base-submit"></button>
                         </form>
@@ -60,7 +60,7 @@
                         <form action="/submit-confluence" method="post" class="base-form" id="confluenceForm">
                             <div class="input-group input-confluence">
                                 <label for="confluence"></label>
-                                <input type="url" id="confluence" name="confluence" placeholder="Confluence" class="base-placeholder placeholder-confluence">
+                                <input type="url" id="confluence" name="confluence" placeholder="Confluence" class="base-placeholder placeholder-confluence input-custom">
                             </div>
                             <button type="submit" class="base-submit"></button>
                         </form>
@@ -76,20 +76,44 @@
                     <form action="/submit-name" method="post" class="custom-form" id="customName">
                         <div class="input-group">
                             <label for="name"></label>
-                            <input type="text" id="name" name="name" placeholder="Название ассистента">
+                            <input type="text" id="name" name="name" placeholder="Название ассистента" class="input-custom">
                         </div>
                     </form>
                 </div>
                 <div class="description-custom">
                     <p class="custom-title">Описание</p>
                     <form action="/submit-description" method="post" class="custom-form" id="customDescripion">
-                        <div class="input-group description-form">
                             <label for="description"></label>
                             <textarea id="description" name="description" 
                                       placeholder="Что делает ваше приложение? Как оно работает? Как пользователь должен взаимодействовать с ним?"
-                                      rows="5"></textarea>
-                        </div>
+                                      rows="10"></textarea>
                     </form>
+                </div>
+                <div class="logo-custom">
+                    <p class="custom-title">Логотип</p>
+                    <div class="logo-form">
+                        <div class="logo-image">
+                            <img src="./icons/example-logo.svg" alt="" class="img-example">
+                        </div>
+                       <form action="/submit-logo" method="post" id="customLogo">
+                        <div class="input-group custom-logo">
+                            <label for="logo"></label>
+                            <input type="file" id="logo" name="logo" placeholder="Логотип">
+                        </div>
+                       </form>
+                    </div>
+                </div>
+
+                <div class="font-custom">
+                    <p class="custom-title">Шрифт</p>
+                    <div class="font-form">
+                       <form action="/submit-font" method="post" id="customFont">
+                        <div class="input-group custom-font">
+                            <label for="font"></label>
+                            <input type="file" id="font" name="font" placeholder="Логотип">
+                        </div>
+                       </form>
+                    </div>
                 </div>
             </section>
             

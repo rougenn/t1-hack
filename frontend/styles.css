@@ -395,21 +395,20 @@ input::placeholder{
   margin-bottom: 4px;
 }
 
-.description-form textarea{
-  height: 124px;
-  width: 100%;
-  box-sizing: border-box;
-  resize: none;
-  border: none;
-  background: none;
+
+textarea{
+  border: 1px solid var(--color-border-light);
+  padding-top: 14px;
+  padding-left: 15px;
+  resize: vertical;
+  width: 33vw;
+  border-radius: 5px;
 }
 
-.description-form textarea::placeholder {
+textarea::placeholder{
   font-size: 12px;
   line-height: 16px;
   color: var(--color-grey-light);
-  opacity: 1;
-  overflow: hidden;
 }
 
 .submit-button {
@@ -532,4 +531,39 @@ input::placeholder{
 
 }
 
+.logo-custom{
+  padding-left: 30px;
+  margin-top: 20px;
+}
 
+
+.logo-form{
+  display: flex;
+  gap: 22px;
+  margin-top: 5px;
+}
+
+.img-example{
+  width: 60px;
+  height: 60px;
+}
+
+.custom-logo{
+  width: 27.5vw;
+  height: 40px;
+}
+
+.font-custom{
+  margin-top: 20px;
+  padding-left: 30px;
+}
+
+textarea{
+  width: 34vw;
+  min-height: 8vw;
+  background-color: var(--color-white);
+}
+
+.input-custom{
+  width: 30vw;
+}
