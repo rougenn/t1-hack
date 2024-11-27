@@ -71,15 +71,18 @@
                 <h3 class="base-knowledge">КАСТОМИЗАЦИЯ</h3>
                 <p class="base-description">Настройте приложение под ваши задачи: 
                     изменяйте стили, цвета и элементы интерфейса.</p>
-                <div class="name-custom">
-                    <p class="custom-title">Название</p>
-                    <form action="/submit-name" method="post" class="custom-form" id="customName">
-                        <div class="input-group">
-                            <label for="name"></label>
-                            <input type="text" id="name" name="name" placeholder="Название ассистента" class="input-custom">
-                        </div>
-                    </form>
-                </div>
+                    <div class="name-custom">
+                        <p class="custom-title">Название</p>
+                        <form action="/submit-name" method="post" class="custom-form form-flex" id="customName">
+                            <div class="input-group">
+                                <label for="name"></label>
+                                <input type="text" id="name" name="name" placeholder="Название ассистента" class="input-custom">
+                            </div>
+                            <button type="submit" class="base-submit"></button>
+                        </form>
+                    </div>
+
+
                 <div class="description-custom">
                     <p class="custom-title">Описание</p>
                     <form action="/submit-description" method="post" class="custom-form" id="customDescripion">
@@ -103,47 +106,54 @@
                        </form>
                     </div>
                 </div>
-
-                <div class="font-custom">
-                    <p class="custom-title">Шрифт</p>
-                    <div class="font-form">
-                       <form action="/submit-font" method="post" id="customFont">
-                        <div class="input-group custom-font">
-                            <label for="font"></label>
-                            <input type="file" id="font" name="font" placeholder="Логотип">
+                    <div class="font-custom">
+                        <p class="custom-title">Шрифт</p>
+                        <div class="font-form">
+                            <form action="/submit-font" method="post" id="customFont" class="form-flex">
+                                <div class="input-group custom-font">
+                                    <label for="font"></label>
+                                    <input type="file" id="font" name="font" placeholder="Логотип" accept=".ttf,.otf,.woff,.woff2">
+                                </div>
+                                <button type="submit" class="base-submit"></button>
+                            </form>
                         </div>
-                       </form>
                     </div>
-                </div>
-
                 <div class="color-custom">
                     <div class="background-pick">
                         <p class="custom-title">Фон</p>
                         <form action="/submit-background-color" class="color-custom-form" id="customBackground">
-                            <input type="color" value="#1C1F4A"  class="color-custom-input">
+                            <label for="backgroundColor"></label>
+                            <input type="color" id="backgroundColor" name="backgroundColor" value="#1C1F4A"  class="color-custom-input">
+                            <button id="applyBackgroundColor" class="base-submit"></button>
                         </form>
-                        
                     </div>
                     <div class="text-pick">
                         <p class="custom-title">Текст</p>
                         <form action="/submit-text-color" class="color-custom-form" id="customText">
-                            <input type="color" value="#FFFFFF"  class="color-custom-input">
+                            <label for="textColor"></label>
+                            <input type="color" id="textColor" name="textColor" value="#FFFFFF"  class="color-custom-input">
+                            <button id="applyTextColor" class="base-submit"></button>
                         </form>
-                        
                     </div>
                     
                     <div class="assistent-pick">
                         <p class="custom-title">Ассистент</p>
                         <form action="/submit-assistent-color" class="color-custom-form" id="customAssistent">
-                            <input type="color" value="#0072C9"  class="color-custom-input">
+                            <label for="assistentColor"></label>
+                            <input type="color" id="assistentColor" name="assistentColor" value="#0072C9"  class="color-custom-input">
+                            <button id="applyAssistentColor" class="base-submit"></button>
                         </form>
+                        
                         
                     </div>
                     <div class="user-pick">
                         <p class="custom-title">Пользователь</p>
                         <form action="/submit-user-color" class="color-custom-form" id="customUser">
-                            <input type="color" value="#05AAE6"  class="color-custom-input">
+                            <label for="userColor"></label>
+                            <input type="color" id="userColor" name="userColor" value="#05AAE6"  class="color-custom-input">
+                            <button id="applyUserColor" class="base-submit"></button>
                         </form>
+                        
                     </div>
                 </div>
             </section>
@@ -155,18 +165,16 @@
                 <button class="major-save">Сохранить</button>
                 <button class="major-export">Экспорт</button>
             </div>
-            <div class="window-view">
-                <div class="header-window">
+            <div class="window-view" id="window-view">
+                <div class="header-window" id="header-window">
                     Название ассистента
                 </div>
-                <div class="dialog">
-
+                <div class="dialog" id="dialog">
+                    <!-- Здесь будет диалог -->
                 </div>
-                <div class="window-ask">
+                <div class="window-ask" id="window-ask">
                     <input type="text" name="message" id="message" placeholder="Написать запрос" class="input-message">
-                    
                 </div>
-
             </div>
         </section>
 </body>

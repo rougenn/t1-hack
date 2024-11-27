@@ -352,7 +352,7 @@ input{
 }
 
 .input-group{
-  width: 100%;
+  width: 32vw;
   height: 40px;
   border: 1px solid var(--color-border-light);
   border-radius: 5px;
@@ -587,7 +587,7 @@ textarea{
 .window-view{
   width: 58vw;
   height: 442px;
-  background-color: #4D4D4D;
+  background-color: #1C1F4A;
   margin-left: 20px;
   margin-top: 20px;
   border-radius: 20px;
@@ -616,8 +616,7 @@ textarea{
   bottom: 0;
     left: 0;
     right: 0;
-  border-radius: 20px 20px 20px 20px;
-  
+  border-radius: 20px 20px 20px 20px;  
   
 }
 
@@ -635,4 +634,14 @@ textarea{
 
 input:focus{
   outline: none;
+}
+
+.color-custom-form{
+  display: flex;
+  gap: 10px;
+}
+
+.form-flex{
+  display: flex;
+  gap: 10px;
 }
