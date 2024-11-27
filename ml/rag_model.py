@@ -9,7 +9,14 @@ from langchain_ollama import ChatOllama
 
 
 class RAGModel:
-    def __init__(self, model_name, database_path=None, base_dir="models"):
+    def __init__(self, model_name, database_path=None, base_dir="models", llama_version="3.2-3B"):
+        """
+        Инициализация RAG модели с выбором версии LLaMA.
+        :param model_name: Имя модели.
+        :param database_path: Путь к директории с текстовыми файлами.
+        :param base_dir: Базовая директория для хранения моделей.
+        :param llama_version: Версия LLaMA ('3.2-3B' или '3.2-1B').
+        """
         self.model_name = model_name
         self.database_path = database_path
         self.model_dir = os.path.join(base_dir, model_name)
@@ -19,8 +26,17 @@ class RAGModel:
         self.chunk_size = 512
         self.chunk_overlap = 50
         self.embeddings_model_id = "intfloat/multilingual-e5-large"
-        self.llm_model_id = "llama3.2:3b-instruct-fp16"
+        self.llama_version = llama_version
 
+        # Настройка ID модели в зависимости от версии LLaMA
+        if self.llama_version == "3.2-3B":
+            self.llm_model_id = "llama3.2:3b-instruct-fp16"
+        elif self.llama_version == "3.2-1B":
+            self.llm_model_id = "llama3.2:1b-instruct-fp16"
+        else:
+            raise ValueError(f"Неверная версия LLaMA: {llama_version}")
+
+        # Проверяем, существует ли модель
         if not os.path.exists(self.model_dir):
             if database_path is None:
                 raise ValueError(f"Модель {model_name} не существует. Укажите путь к базе данных для её создания.")
@@ -37,12 +53,14 @@ class RAGModel:
             rotation="100 KB",
             compression="zip"
         )
-        logger.info(f"Инициализирована модель {model_name} в {self.model_dir}")
+        logger.info(f"Инициализирована модель {model_name} с LLaMA {self.llama_version} в {self.model_dir}")
 
         self.embeddings = HuggingFaceEmbeddings(
             model_name=self.embeddings_model_id,
             model_kwargs={"device": "cpu"}
         )
+
+        # Проверяем или создаем базу знаний
         self.db = self._get_index_db()
 
     def _save_config(self):
@@ -52,6 +70,7 @@ class RAGModel:
             "chunk_size": self.chunk_size,
             "chunk_overlap": self.chunk_overlap,
             "embeddings_model_id": self.embeddings_model_id,
+            "llama_version": self.llama_version,
             "llm_model_id": self.llm_model_id
         }
         with open(self.config_file, "w", encoding="utf-8") as f:
@@ -66,6 +85,7 @@ class RAGModel:
         self.chunk_size = config.get("chunk_size", 512)
         self.chunk_overlap = config.get("chunk_overlap", 50)
         self.embeddings_model_id = config.get("embeddings_model_id", "intfloat/multilingual-e5-large")
+        self.llama_version = config.get("llama_version", "3.2-3B")
         self.llm_model_id = config.get("llm_model_id", "llama3.2:3b-instruct-fp16")
 
     def _load_txt_documents(self):
@@ -78,7 +98,10 @@ class RAGModel:
                         content = f.read().strip()
                         if content:
                             documents.append(Document(page_content=content, metadata={"source": file}))
+        if not documents:
+            raise ValueError(f"Папка '{self.database_path}' пуста или файлы не содержат текста.")
         return documents
+
 
     def _split_documents_into_chunks(self, documents):
         text_splitter = RecursiveCharacterTextSplitter(
