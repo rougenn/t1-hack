@@ -24,7 +24,7 @@ document.getElementById('loginForm').addEventListener('submit', function(event) 
         console.log('Успех:', data);
         if (data.success) {
             // Перенаправляем пользователя на главную страницу или другую страницу после успешной авторизации
-            window.location.href = './index.html';
+            window.location.href = './main.html';
         } else {
             document.getElementById('errorMessage').textContent = 'Неверный логин или пароль';
         }
