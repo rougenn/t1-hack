@@ -3,7 +3,6 @@ package main
 import (
 	"log"
 	"os"
-	"path/filepath"
 	"t1/internal/pkg/db"
 	"t1/internal/pkg/server"
 )
@@ -17,7 +16,7 @@ func main() {
 	log.Printf("Current working directory: %s", dir)
 
 	// Формируем относительный путь к файлу миграции
-	migrationFilePath := filepath.Join("scripts", "migration.sql")
+	migrationFilePath := "C:/python/rag/t1-hack/backend/scripts/migration.sql"
 
 	// Запуск сервера
 	s := server.New(":8090")

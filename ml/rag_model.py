@@ -9,13 +9,16 @@ from langchain_ollama import ChatOllama
 
 
 class RAGModel:
-    def __init__(self, model_name, database_path=None, base_dir="models", llama_version="3.2-3B"):
+    def __init__(self, model_name, database_path=None, base_dir="models", llama_version="3.2-3B", chunk_size=512, chunk_overlap=50, embeddings_model_id="sentence-transformers/all-MiniLM-L6-v2"):
         """
-        Инициализация RAG модели с выбором версии LLaMA.
+        Инициализация RAG модели с выбором версии LLaMA и возможностью задать параметры.
         :param model_name: Имя модели.
         :param database_path: Путь к директории с текстовыми файлами.
         :param base_dir: Базовая директория для хранения моделей.
         :param llama_version: Версия LLaMA ('3.2-3B' или '3.2-1B').
+        :param chunk_size: Размер чанка для разбиения документов.
+        :param chunk_overlap: Перекрытие чанков.
+        :param embeddings_model_id: Модель эмбеддингов.
         """
         self.model_name = model_name
         self.database_path = database_path
@@ -23,9 +26,9 @@ class RAGModel:
         self.db_dir = os.path.join(self.model_dir, "db")
         self.log_dir = os.path.join(self.model_dir, "log")
         self.config_file = os.path.join(self.model_dir, "config.json")
-        self.chunk_size = 256
-        self.chunk_overlap = 50
-        self.embeddings_model_id = "intfloat/multilingual-e5-large"
+        self.chunk_size = chunk_size
+        self.chunk_overlap = chunk_overlap
+        self.embeddings_model_id = embeddings_model_id
         self.llama_version = llama_version
 
         # Настройка ID модели в зависимости от версии LLaMA
@@ -55,6 +58,7 @@ class RAGModel:
         )
         logger.info(f"Инициализирована модель {model_name} с LLaMA {self.llama_version} в {self.model_dir}")
 
+        # Создаем эмбеддинги с выбранной моделью
         self.embeddings = HuggingFaceEmbeddings(
             model_name=self.embeddings_model_id,
             model_kwargs={"device": "cpu"}
@@ -84,7 +88,7 @@ class RAGModel:
         self.database_path = config.get("database_path")
         self.chunk_size = config.get("chunk_size", 512)
         self.chunk_overlap = config.get("chunk_overlap", 50)
-        self.embeddings_model_id = config.get("embeddings_model_id", "intfloat/multilingual-e5-large")
+        self.embeddings_model_id = config.get("embeddings_model_id", "sentence-transformers/all-MiniLM-L6-v2")
         self.llama_version = config.get("llama_version", "3.2-3B")
         self.llm_model_id = config.get("llm_model_id", "llama3.2:3b-instruct-fp16")
 
@@ -101,7 +105,6 @@ class RAGModel:
         if not documents:
             raise ValueError(f"Папка '{self.database_path}' пуста или файлы не содержат текста.")
         return documents
-
 
     def _split_documents_into_chunks(self, documents):
         text_splitter = RecursiveCharacterTextSplitter(

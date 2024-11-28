@@ -59,7 +59,7 @@ func (r *Server) newAPI() *gin.Engine {
 	engine := gin.New()
 
 	// Указываем папку для статических файлов
-	engine.Static("/", "/home/user/projects/t1-hack/frontend")
+	engine.Static("/", "C:/python/rag/t1-hack/frontend")
 
 	engine.POST("/api/admin/login", r.LogIn)
 	engine.POST("/api/admin/signup", r.Register)
