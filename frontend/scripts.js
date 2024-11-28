@@ -131,20 +131,6 @@ document.addEventListener('DOMContentLoaded', function () {
     const dialog = document.getElementById('dialog');
     const sendBtn = document.getElementById('send-btn');
 
-    if (sendBtn) {
-        sendBtn.addEventListener('click', async function() {
-            console.log("Кнопка нажата!");  // Проверяем, срабатывает ли обработчик
-            const message = messageInput.value.trim();
-            if (!message) return;
-
-            // Логика отправки сообщения
-            console.log("Отправляем сообщение:", message);
-            // Добавить код для отправки сообщения...
-        });
-    } else {
-        console.error("Кнопка с id 'send-btn' не найдена!");
-    }
-
     sendBtn.addEventListener('click', async function() {
         if (!assistantId) {
             alert("Пожалуйста, создайте ассистента перед отправкой сообщений.");
@@ -282,33 +268,4 @@ document.addEventListener('DOMContentLoaded', function () {
         event.preventDefault(); // Предотвращаем отправку формы
         headerWindow.textContent = nameInput.value;
     });
-
-    // Обработка отправки сообщений
-    messageInput.addEventListener('keypress', function(event) {
-        if (event.key === 'Enter') {
-            event.preventDefault(); // Предотвращаем отправку формы
-            sendMessage();
-        }
-    });
-
-    function sendMessage() {
-        const userMessage = messageInput.value.trim();
-        if (userMessage === '') return;
-
-        // Создаем элемент для сообщения пользователя
-        const userMessageElement = document.createElement('div');
-        userMessageElement.className = 'message user';
-        userMessageElement.textContent = userMessage;
-
-        // Добавляем сообщение в диалог
-        dialog.appendChild(userMessageElement);
-
-        // Прокручиваем окно чата вниз
-        dialog.scrollTop = dialog.scrollHeight;
-
-        // Очистить поле ввода
-        messageInput.value = '';
-
-        // Здесь можно добавить логику для отправки сообщения на сервер, если необходимо
-    }
 });
