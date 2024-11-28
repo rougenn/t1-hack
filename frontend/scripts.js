@@ -165,7 +165,13 @@ document.addEventListener('DOMContentLoaded', function () {
             });
 
             if (!response.ok) {
-                throw new Error("Ошибка при отправке сообщения.");
+                if (response.status === 401) {  // 401 - Unauthorized, токен истек
+                    console.log("Token expired. Trying to refresh...");
+                    await refreshAccessToken();  // Обновляем токены
+                    return sendCreateAssistantRequest(formData);  // повторяем запрос после обновления токена
+                } else {
+                    throw new Error('Ошибка при создании ассистента. Пожалуйста, попробуйте позже.');
+                }
             }
 
             const data = await response.json();
@@ -302,7 +308,13 @@ document.addEventListener('DOMContentLoaded', function () {
             });
 
             if (!response.ok) {
-                throw new Error("Ошибка при отправке сообщения.");
+                if (response.status === 401) {  // 401 - Unauthorized, токен истек
+                    console.log("Token expired. Trying to refresh...");
+                    await refreshAccessToken();  // Обновляем токены
+                    return sendCreateAssistantRequest(formData);  // повторяем запрос после обновления токена
+                } else {
+                    throw new Error('Ошибка при создании ассистента. Пожалуйста, попробуйте позже.');
+                }
             }
 
             const data = await response.json();
