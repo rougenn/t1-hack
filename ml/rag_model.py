@@ -7,19 +7,8 @@ from langchain_huggingface import HuggingFaceEmbeddings
 from langchain.text_splitter import RecursiveCharacterTextSplitter
 from langchain_ollama import ChatOllama
 
-
 class RAGModel:
     def __init__(self, model_name, database_path=None, base_dir="models", llama_version="3.2-3B", chunk_size=512, chunk_overlap=50, embeddings_model_id="sentence-transformers/all-MiniLM-L6-v2"):
-        """
-        Инициализация RAG модели с выбором версии LLaMA и возможностью задать параметры.
-        :param model_name: Имя модели.
-        :param database_path: Путь к директории с текстовыми файлами.
-        :param base_dir: Базовая директория для хранения моделей.
-        :param llama_version: Версия LLaMA ('3.2-3B' или '3.2-1B').
-        :param chunk_size: Размер чанка для разбиения документов.
-        :param chunk_overlap: Перекрытие чанков.
-        :param embeddings_model_id: Модель эмбеддингов.
-        """
         self.model_name = model_name
         self.database_path = database_path
         self.model_dir = os.path.join(base_dir, model_name)
@@ -31,7 +20,6 @@ class RAGModel:
         self.embeddings_model_id = embeddings_model_id
         self.llama_version = llama_version
 
-        # Настройка ID модели в зависимости от версии LLaMA
         if self.llama_version == "3.2-3B":
             self.llm_model_id = "llama3.2:3b-instruct-fp16"
         elif self.llama_version == "3.2-1B":
@@ -39,16 +27,7 @@ class RAGModel:
         else:
             raise ValueError(f"Неверная версия LLaMA: {llama_version}")
 
-        # Проверяем, существует ли модель
-        if not os.path.exists(self.model_dir):
-            if database_path is None:
-                raise ValueError(f"Модель {model_name} не существует. Укажите путь к базе данных для её создания.")
-            os.makedirs(self.db_dir, exist_ok=True)
-            os.makedirs(self.log_dir, exist_ok=True)
-            self._save_config()
-        else:
-            self._load_config()
-
+        # Настройка логирования и эмбеддингов
         logger.add(
             os.path.join(self.log_dir, f"{model_name}.log"),
             format="{time} {level} {message}",
@@ -56,41 +35,13 @@ class RAGModel:
             rotation="100 KB",
             compression="zip"
         )
-        logger.info(f"Инициализирована модель {model_name} с LLaMA {self.llama_version} в {self.model_dir}")
 
-        # Создаем эмбеддинги с выбранной моделью
         self.embeddings = HuggingFaceEmbeddings(
             model_name=self.embeddings_model_id,
             model_kwargs={"device": "cpu"}
         )
 
-        # Проверяем или создаем базу знаний
         self.db = self._get_index_db()
-
-    def _save_config(self):
-        config = {
-            "model_name": self.model_name,
-            "database_path": self.database_path,
-            "chunk_size": self.chunk_size,
-            "chunk_overlap": self.chunk_overlap,
-            "embeddings_model_id": self.embeddings_model_id,
-            "llama_version": self.llama_version,
-            "llm_model_id": self.llm_model_id
-        }
-        with open(self.config_file, "w", encoding="utf-8") as f:
-            json.dump(config, f, indent=4)
-
-    def _load_config(self):
-        if not os.path.exists(self.config_file):
-            raise FileNotFoundError(f"Конфигурация для модели {self.model_name} не найдена.")
-        with open(self.config_file, "r", encoding="utf-8") as f:
-            config = json.load(f)
-        self.database_path = config.get("database_path")
-        self.chunk_size = config.get("chunk_size", 512)
-        self.chunk_overlap = config.get("chunk_overlap", 50)
-        self.embeddings_model_id = config.get("embeddings_model_id", "sentence-transformers/all-MiniLM-L6-v2")
-        self.llama_version = config.get("llama_version", "3.2-3B")
-        self.llm_model_id = config.get("llm_model_id", "llama3.2:3b-instruct-fp16")
 
     def _load_txt_documents(self):
         documents = []
@@ -101,7 +52,8 @@ class RAGModel:
                     with open(file_path, 'r', encoding='utf-8') as f:
                         content = f.read().strip()
                         if content:
-                            documents.append(Document(page_content=content, metadata={"source": file}))
+                            # Добавляем документ с метаданными (имя файла без расширения)
+                            documents.append(Document(page_content=content, metadata={"source": os.path.splitext(file)[0]}))
         if not documents:
             raise ValueError(f"Папка '{self.database_path}' пуста или файлы не содержат текста.")
         return documents
@@ -126,10 +78,10 @@ class RAGModel:
 
     def get_relevant_chunks(self, topic, num_chunks=3):
         docs = self.db.similarity_search(topic, k=num_chunks)
-        return "\n".join([doc.page_content for doc in docs])
+        return "\n".join([doc.page_content for doc in docs]), [doc.metadata["source"] for doc in docs]
 
     def ask_question(self, topic):
-        message_content = self.get_relevant_chunks(topic, num_chunks=3)
+        message_content, sources = self.get_relevant_chunks(topic, num_chunks=3)
         llm = ChatOllama(model=self.llm_model_id, temperature=0)
 
         prompt = f"""
@@ -139,4 +91,7 @@ class RAGModel:
         Вопрос: {topic}
         Ответ:
         """
-        return llm.invoke([{"role": "user", "content": prompt}]).content
+        answer = llm.invoke([{"role": "user", "content": prompt}]).content
+        # Возвращаем только ответ и первый источник
+        return answer, sources[0]  # Возвращаем только первый файл, так как источник один
+
