@@ -383,6 +383,17 @@ document.addEventListener('DOMContentLoaded', function () {
                 height: auto;
                 border-radius: 20px 20px 0 0;
             }
+            window-ask{
+                padding: 1vw 2vw;
+                width: 100%;
+                height: auto;
+                background-color: var(--color-white) !important;
+                position: absolute;
+                bottom: 0;
+                left: 0;
+                right: 0;
+                display: flex;
+            }
 
             .dialog {
                 overflow-y: auto;
@@ -401,7 +412,7 @@ document.addEventListener('DOMContentLoaded', function () {
 
             .window-ask {
                 padding: 1vw 2vw;
-                width: 100%;
+                width: 50%;
                 height: auto;
                 background-color: ${messageInput.style.backgroundColor} !important;
                 position: absolute;
@@ -493,36 +504,57 @@ document.addEventListener('DOMContentLoaded', function () {
     }
 
     // Функция для скачивания экспортированного кода
-    function downloadExport() {
-        const html = generateExportHTML();
-        const css = generateExportCSS();
-        const js = generateExportJS();
+    async function downloadExport() {
+        try {
+            // Проверяем, не истек ли токен
+            const response = await fetch('http://localhost:8090/api/check-token', {
+                method: 'GET',
+                headers: {
+                    'Authorization': `Bearer ${accessToken}`,
+                },
+            });
 
-        const exportCode = `
-            <!DOCTYPE html>
-            <html lang="en">
-            <head>
-                <meta charset="UTF-8">
-                <meta name="viewport" content="width=device-width, initial-scale=1.0">
-                <title>Окно знаний | YSL</title>
-                <style>${css}</style>
-            </head>
-            <body>
-                ${html}
-                <script>${js}</script>
-            </body>
-            </html>
-        `;
+            if (!response.ok) {
+                if (response.status === 401) {  // 401 - Unauthorized, токен истек
+                    console.log("Token expired. Trying to refresh...");
+                    await refreshAccessToken();  // Обновляем токены
+                } else {
+                    throw new Error('Ошибка при проверке токена.');
+                }
+            }
 
-        const blob = new Blob([exportCode], { type: 'text/html' });
-        const url = URL.createObjectURL(blob);
-        const a = document.createElement('a');
-        a.href = url;
-        a.download = 'exported_dialog.html';
-        document.body.appendChild(a);
-        a.click();
-        document.body.removeChild(a);
-        URL.revokeObjectURL(url);
+            const html = generateExportHTML();
+            const css = generateExportCSS();
+            const js = generateExportJS();
+
+            const exportCode = `
+                <!DOCTYPE html>
+                <html lang="en">
+                <head>
+                    <meta charset="UTF-8">
+                    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+                    <title>Окно знаний | YSL</title>
+                    <style>${css}</style>
+                </head>
+                <body>
+                    ${html}
+                    <script>${js}</script>
+                </body>
+                </html>
+            `;
+
+            const blob = new Blob([exportCode], { type: 'text/html' });
+            const url = URL.createObjectURL(blob);
+            const a = document.createElement('a');
+            a.href = url;
+            a.download = 'exported_dialog.html';
+            document.body.appendChild(a);
+            a.click();
+            document.body.removeChild(a);
+            URL.revokeObjectURL(url);
+        } catch (error) {
+            alert(error.message);
+        }
     }
 
     // Привязываем функцию скачивания к кнопке экспорта
