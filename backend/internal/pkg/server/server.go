@@ -192,8 +192,8 @@ func (r *Server) SendMessage(ctx *gin.Context) {
 
 	// Формируем запрос для отправки на Python-сервер
 	questionRequest := map[string]string{
-		"assistant_id": assistantID.String(), // Передаем UUID ассистента
-		"message":      req.Message,          // Сообщение от пользователя
+		"assistant_name": fmt.Sprintf("assistant_%s", assistantID),
+		"message":        req.Message, // Сообщение от пользователя
 	}
 
 	questionBody, err := json.Marshal(questionRequest)
@@ -221,7 +221,7 @@ func (r *Server) SendMessage(ctx *gin.Context) {
 	}
 
 	// Отправляем ответ на фронт
-	ctx.JSON(http.StatusOK, gin.H{"message": answerResponse.Answer})
+	ctx.JSON(http.StatusOK, gin.H{"message": answerResponse.Message})
 }
 
 func (r *Server) GetChat(ctx *gin.Context) {}

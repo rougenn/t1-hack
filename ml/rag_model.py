@@ -23,7 +23,7 @@ class RAGModel:
         self.db_dir = os.path.join(self.model_dir, "db")
         self.log_dir = os.path.join(self.model_dir, "log")
         self.config_file = os.path.join(self.model_dir, "config.json")
-        self.chunk_size = 512
+        self.chunk_size = 256
         self.chunk_overlap = 50
         self.embeddings_model_id = "intfloat/multilingual-e5-large"
         self.llama_version = llama_version

@@ -1,6 +1,7 @@
 document.addEventListener('DOMContentLoaded', function () {
     let accessToken = localStorage.getItem('access_token');
     let refreshToken = localStorage.getItem('refresh_token');
+    let assistantId = localStorage.getItem('assistant_id');  // Добавим переменную для хранения ID ассистента
     
     // Если токен отсутствует, перенаправляем на страницу регистрации
     if (!accessToken) {
@@ -21,6 +22,7 @@ document.addEventListener('DOMContentLoaded', function () {
         localStorage.removeItem('access_token');
         localStorage.removeItem('refresh_token');
         localStorage.removeItem('user_email');
+        localStorage.removeItem('assistant_id');  // Удаляем ID ассистента
         window.location.href = './login.html'; // Редирект на страницу логина
     });
 
@@ -74,6 +76,8 @@ document.addEventListener('DOMContentLoaded', function () {
 
             const data = await response.json();
             console.log('Assistant created:', data);
+            assistantId = data.assistant_id;  // Сохраняем ID ассистента
+            localStorage.setItem('assistant_id', assistantId);  // Сохраняем в localStorage
             alert('Ассистент успешно создан!');
         } catch (error) {
             // Если ошибка, выводим сообщение об ошибке на странице
@@ -122,13 +126,85 @@ document.addEventListener('DOMContentLoaded', function () {
         }
     }
 
+    // Обработка отправки сообщений
+    const messageInput = document.getElementById('message');
+    const dialog = document.getElementById('dialog');
+    const sendBtn = document.getElementById('send-btn');
+
+    if (sendBtn) {
+        sendBtn.addEventListener('click', async function() {
+            console.log("Кнопка нажата!");  // Проверяем, срабатывает ли обработчик
+            const message = messageInput.value.trim();
+            if (!message) return;
+
+            // Логика отправки сообщения
+            console.log("Отправляем сообщение:", message);
+            // Добавить код для отправки сообщения...
+        });
+    } else {
+        console.error("Кнопка с id 'send-btn' не найдена!");
+    }
+
+    sendBtn.addEventListener('click', async function() {
+        if (!assistantId) {
+            alert("Пожалуйста, создайте ассистента перед отправкой сообщений.");
+            return;
+        }
+
+        const message = messageInput.value.trim();
+        if (!message) return; // Не отправляем пустые сообщения
+
+        // Отображаем сообщение пользователя
+        const userMessageElement = document.createElement('div');
+        userMessageElement.className = 'message user';
+        userMessageElement.textContent = message;
+        dialog.appendChild(userMessageElement);
+        dialog.scrollTop = dialog.scrollHeight;
+
+        messageInput.value = '';  // Очищаем поле ввода
+
+        // Блокируем интерфейс отправки сообщений, пока идет запрос
+        sendBtn.disabled = true;
+        messageInput.disabled = true;
+
+        try {
+            // Отправляем сообщение
+            const response = await fetch(`http://localhost:8090/api/chats/send/${assistantId}`, {
+                method: 'POST',
+                headers: {
+                    'Content-Type': 'application/json',
+                    'Authorization': `Bearer ${accessToken}`,
+                },
+                body: JSON.stringify({ message })
+            });
+
+            if (!response.ok) {
+                throw new Error("Ошибка при отправке сообщения.");
+            }
+
+            const data = await response.json();
+            const assistantMessage = data.message;
+
+            // Отображаем сообщение ассистента
+            const assistantMessageElement = document.createElement('div');
+            assistantMessageElement.className = 'message assistant';
+            assistantMessageElement.textContent = assistantMessage;
+            dialog.appendChild(assistantMessageElement);
+            dialog.scrollTop = dialog.scrollHeight;
+        } catch (error) {
+            alert(error.message);
+        } finally {
+            // Восстанавливаем интерфейс отправки сообщений
+            sendBtn.disabled = false;
+            messageInput.disabled = false;
+        }
+    });
+
     // Далее идет ваш код для кастомизации, формы, сообщений и т.д.
     const fontForm = document.getElementById('customFont');
     const fontInput = document.getElementById('font');
     const windowView = document.getElementById('window-view');
-    const dialog = document.getElementById('dialog');
     const headerWindow = document.getElementById('header-window');
-    const messageInput = document.getElementById('message');
     const logoInput = document.getElementById('logo');
     const logoImage = document.querySelector('.img-example');
 

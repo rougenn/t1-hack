@@ -37,5 +37,5 @@ type SendMessageRequest struct {
 }
 
 type ModelResponse struct {
-	Answer string `json:"answer" binding:"required"`
+	Message string `json:"message" binding:"required"`
 }
