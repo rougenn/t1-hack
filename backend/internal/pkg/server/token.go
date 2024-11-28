@@ -14,11 +14,10 @@ import (
 // в будущем брать его откуда то (конфиг думаю)
 var jwtSecret = []byte("kljasdf;j;lasjdfhjkjk")
 
-// GenerateAccessToken генерирует Access Token (действителен 3 минуты)
 func GenerateAccessToken(userID uuid.UUID) (string, error) {
 	claims := jwt.MapClaims{
 		"user_id": userID.String(), // Сохраняем UUID как строку
-		"exp":     time.Now().Add(2 * time.Minute).Unix(),
+		"exp":     time.Now().Add(2 * time.Second).Unix(),
 	}
 	token := jwt.NewWithClaims(jwt.SigningMethodHS256, claims)
 	return token.SignedString(jwtSecret)

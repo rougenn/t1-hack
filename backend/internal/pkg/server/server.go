@@ -106,6 +106,8 @@ func (r *Server) CreateChatAssistant(ctx *gin.Context) {
 		"assistant_name":      fmt.Sprintf("assistant_%s", assistantID), // Используем String() для UUID
 		"model_name":          req.ModelName,
 		"txt_files_directory": fmt.Sprintf("/tmp/assistants/%s", assistantID),
+		"chunk_size":          req.ChunkSize,
+		"embeddings_model_id": req.EmbenddingsModelId,
 	}
 
 	r.logger.Info("Preparing data for training model", zap.Any("train_model_request", trainModelRequest))
