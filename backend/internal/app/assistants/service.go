@@ -33,10 +33,15 @@ func CreateChatAssistant(DB *sql.DB, adminID uuid.UUID, req models.AssistantRequ
 		log.Printf("Error getting multipart form: %v", err)
 		return "", fmt.Errorf("error getting multipart form: %w", err)
 	}
-	log.Printf("Received multipart form with %d files", len(form.File["files"]))
 
-	// Получаем файлы из формы
-	files := form.File["files"]
+	// Проверка наличия файлов в запросе
+	files, exists := form.File["files[]"]
+	if !exists || len(files) == 0 {
+		log.Println("No files found in the request")
+		return "", fmt.Errorf("no files found in the request")
+	}
+
+	log.Printf("Received multipart form with %d files", len(files))
 
 	// Создаем директорию для ассистента, где будут храниться только .txt файлы
 	tempDir := "/tmp/assistants/" + assistantID.String() // Преобразуем UUID в строку для пути

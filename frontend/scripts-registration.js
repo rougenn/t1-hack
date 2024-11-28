@@ -5,18 +5,21 @@ document.getElementById('registrationForm').addEventListener('submit', function(
     const password = document.getElementById('password').value;
     const confirmPassword = document.getElementById('confirmPassword').value;
 
+    // Проверка, что пароли совпадают
     if (password !== confirmPassword) {
         document.getElementById('errorMessage').textContent = 'Passwords do not match';
         return;
     }
 
+    // Проверка длины пароля
     if (password.length < 8) {
         document.getElementById('errorMessage').textContent = 'Password must be at least 8 characters';
         return;
     }
 
-    const data = { email, password };
+    const data = { email, password };  // Убираем "login", только email и password
 
+    // Отправка запроса на сервер
     fetch('http://localhost:8090/api/admin/signup', {
         method: 'POST',
         headers: {
@@ -26,9 +29,12 @@ document.getElementById('registrationForm').addEventListener('submit', function(
     })
     .then(response => response.json())
     .then(data => {
-        if (data.success) {
+        console.log('Server response:', data);  // Отладка ответа от сервера
+
+        // Проверка, что объект user существует в ответе
+        if (data.user) {
             console.log('Registration successful');
-            window.location.href = './login.html';
+            window.location.href = './login.html';  // Переход на страницу логина
         } else {
             document.getElementById('errorMessage').textContent = 'Registration error';
         }

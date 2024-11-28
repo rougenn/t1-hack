@@ -27,10 +27,15 @@ type RegisterRequest struct {
 
 // Модель запроса для создания ассистента
 type AssistantRequest struct {
-	URL   string                  `form:"url" binding:"required"` // URL для ассистента
-	Files []*multipart.FileHeader `form:"files[]"`                // Массив файлов
+	AssistantName string                  `form:"assistant_name" binding:"required"` // имя для ассистента
+	ModelName     string                  `form:"model_name" binding:"required"`     // имя для ассистента
+	Files         []*multipart.FileHeader `form:"files[]"`                           // Массив файлов
 }
 
 type SendMessageRequest struct {
 	Message string `json:"message" binding:"required"`
+}
+
+type ModelResponse struct {
+	Answer string `json:"answer" binding:"required"`
 }

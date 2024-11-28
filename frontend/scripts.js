@@ -1,41 +1,128 @@
-// document.addEventListener('DOMContentLoaded', function() {
+document.addEventListener('DOMContentLoaded', function () {
+    let accessToken = localStorage.getItem('access_token');
+    let refreshToken = localStorage.getItem('refresh_token');
+    
+    // Если токен отсутствует, перенаправляем на страницу регистрации
+    if (!accessToken) {
+        window.location.href = './login.html';
+        return;
+    }
 
-//     /* chat-bot */
-//     const messagesContainer = document.getElementById('dialog');
-//     const userInput = document.getElementById('message');
-//     const sendButton = document.getElementById('send-btn');
+    // Отображаем email пользователя
+    const userLogin = document.getElementById('userLogin');
+    const logoutBtn = document.getElementById('logoutBtn');
+    const userEmail = localStorage.getItem('user_email');
+    if (userEmail) {
+        userLogin.textContent = userEmail;
+    }
 
-//     function addMessage(sender, text) {
-//         const messageDiv = document.createElement('div');
-//         messageDiv.classList.add(sender === 'bot' ? 'bot-message' : 'user-message');
-//         messageDiv.textContent = text;
-//         messagesContainer.appendChild(messageDiv);
-//         messagesContainer.scrollTop = messagesContainer.scrollHeight; // Скролл вниз
-//     }
+    logoutBtn.addEventListener('click', function () {
+        // Удаляем токены и email при выходе
+        localStorage.removeItem('access_token');
+        localStorage.removeItem('refresh_token');
+        localStorage.removeItem('user_email');
+        window.location.href = './login.html'; // Редирект на страницу логина
+    });
 
-//     sendButton.addEventListener('click', () => {
-//         const userText = userInput.value.trim();
-//         if (userText === '') return;
+    // Кнопка создания ассистента
+    const createAssistantBtn = document.getElementById('createAssistantBtn');
+    createAssistantBtn.addEventListener('click', function () {
+        const assistantName = document.getElementById('name').value;
+        const modelName = document.getElementById('llm-select').value;
+        const filesInput = document.getElementById('document');  // Элемент для загрузки файлов
+        const files = filesInput.files;
 
-//         addMessage('user', userText);
-//         userInput.value = '';
+        if (!assistantName || !modelName) {
+            alert("Название ассистента и модель обязательны для ввода!");
+            return;
+        }
 
-//         // Пример ответа бота
-//         setTimeout(() => {
-//             addMessage('bot', 'Это пример ответа от чат-бота!');
-//         }, 500);
-//     });
+        const formData = new FormData();
+        formData.append('assistant_name', assistantName);
+        formData.append('model_name', modelName);
 
-//     // Отправка сообщения при нажатии Enter
-//     userInput.addEventListener('keydown', (event) => {
-//         if (event.key === 'Enter') {
-//             sendButton.click();
-//         }
-//     });
-// });
+        // Добавляем файлы в formData, если они выбраны
+        if (files.length > 0) {
+            for (let i = 0; i < files.length; i++) {
+                formData.append('files[]', files[i]);  // Добавляем каждый файл в formData
+            }
+        }
 
+        sendCreateAssistantRequest(formData);
+    });
 
-document.addEventListener('DOMContentLoaded', function() {
+    async function sendCreateAssistantRequest(formData) {
+        try {
+            const response = await fetch('http://localhost:8090/api/admin/create-chat-assistant', {
+                method: 'POST',
+                headers: {
+                    'Authorization': `Bearer ${accessToken}`,
+                    // Content-Type не указываем вручную, так как FormData сам его установит
+                },
+                body: formData
+            });
+
+            if (!response.ok) {
+                if (response.status === 401) {  // 401 - Unauthorized, токен истек
+                    console.log("Token expired. Trying to refresh...");
+                    await refreshAccessToken();  // Обновляем токены
+                    return sendCreateAssistantRequest(formData);  // повторяем запрос после обновления токена
+                } else {
+                    throw new Error('Ошибка при создании ассистента. Пожалуйста, попробуйте позже.');
+                }
+            }
+
+            const data = await response.json();
+            console.log('Assistant created:', data);
+            alert('Ассистент успешно создан!');
+        } catch (error) {
+            // Если ошибка, выводим сообщение об ошибке на странице
+            showError(error.message);
+        }
+    }
+
+    // Функция для обновления access_token с использованием refresh_token
+    async function refreshAccessToken() {
+        const response = await fetch('http://localhost:8090/api/admin/refresh-token', {
+            method: 'POST',
+            headers: {
+                'Content-Type': 'application/json',
+            },
+            body: JSON.stringify({
+                access_token: accessToken,  // Передаем токен в теле запроса, а не в заголовке
+                refresh_token: refreshToken
+            })
+        });
+
+        const data = await response.json();
+
+        if (data.access_token && data.refresh_token) {
+            // Обновляем токены в localStorage и в переменных
+            localStorage.setItem('access_token', data.access_token);
+            localStorage.setItem('refresh_token', data.refresh_token);
+
+            // Обновляем переменные в коде
+            accessToken = data.access_token;
+            refreshToken = data.refresh_token;
+
+            console.log('Tokens refreshed');
+        } else {
+            console.error('Failed to refresh token');
+            alert('Ошибка при обновлении токенов!');
+            window.location.href = './login.html'; // Перенаправляем на страницу логина, если refresh_token тоже невалиден
+        }
+    }
+
+    // Функция для отображения ошибок на сайте
+    function showError(errorMessage) {
+        const errorContainer = document.getElementById('error-container');
+        if (errorContainer) {
+            errorContainer.textContent = errorMessage;
+            errorContainer.style.display = 'block';  // Показываем контейнер с ошибкой
+        }
+    }
+
+    // Далее идет ваш код для кастомизации, формы, сообщений и т.д.
     const fontForm = document.getElementById('customFont');
     const fontInput = document.getElementById('font');
     const windowView = document.getElementById('window-view');
@@ -140,44 +227,12 @@ document.addEventListener('DOMContentLoaded', function() {
         // Добавляем сообщение в диалог
         dialog.appendChild(userMessageElement);
 
-        // Очищаем поле ввода
-        messageInput.value = '';
-
-        // Прокручиваем диалог вниз, чтобы видеть последнее сообщение
+        // Прокручиваем окно чата вниз
         dialog.scrollTop = dialog.scrollHeight;
 
-        // Здесь можно добавить логику для отправки сообщения на сервер и получения ответа от ассистента
-        // Например, с помощью fetch или axios
-        // Пример:
-        // fetch('/api/assistant', {
-        //     method: 'POST',
-        //     headers: {
-        //         'Content-Type': 'application/json'
-        //     },
-        //     body: JSON.stringify({ message: userMessage })
-        // })
-        // .then(response => response.json())
-        // .then(data => {
-        //     const assistantMessage = data.response;
-        //     const assistantMessageElement = document.createElement('div');
-        //     assistantMessageElement.className = 'message assistant';
-        //     assistantMessageElement.textContent = assistantMessage;
-        //     dialog.appendChild(assistantMessageElement);
-        //     dialog.scrollTop = dialog.scrollHeight;
-        // });
+        // Очистить поле ввода
+        messageInput.value = '';
+
+        // Здесь можно добавить логику для отправки сообщения на сервер, если необходимо
     }
-
-    // Обработка загрузки изображения
-    logoInput.addEventListener('change', function(event) {
-        const file = event.target.files[0];
-        if (file) {
-            const reader = new FileReader();
-
-            reader.onload = function(e) {
-                logoImage.src = e.target.result;
-            };
-
-            reader.readAsDataURL(file);
-        }
-    });
 });

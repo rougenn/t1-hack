@@ -58,17 +58,8 @@ func (r *Server) Stop() {
 func (r *Server) newAPI() *gin.Engine {
 	engine := gin.New()
 
-	// engine.Use(cors.New(cors.Config{
-	// 	AllowOrigins:     []string{"http://localhost:5173"}, // Разрешить запросы с вашего фронтенда
-	// 	AllowMethods:     []string{"GET", "POST", "PUT", "DELETE", "OPTIONS"},
-	// 	AllowHeaders:     []string{"Origin", "Authorization", "Content-Type"},
-	// 	ExposeHeaders:    []string{"Content-Length"},
-	// 	AllowCredentials: true,
-	// }))
-
-	engine.GET("/health", func(ctx *gin.Context) {
-		ctx.Status(http.StatusOK)
-	})
+	// Указываем папку для статических файлов
+	engine.Static("/", "/home/user/projects/t1-hack/frontend")
 
 	engine.POST("/api/admin/login", r.LogIn)
 	engine.POST("/api/admin/signup", r.Register)
@@ -84,6 +75,7 @@ func (r *Server) newAPI() *gin.Engine {
 }
 
 // если отправляем пустой файл питон серв падает !!!!!!!!!
+// продумать чтобы возвращалась ссылка!!!!!!!!!!!!!!! или чтобы на фронте с этим ебались!!!!!!!!!!
 func (r *Server) CreateChatAssistant(ctx *gin.Context) {
 	// Получаем userID как uuid.UUID из контекста
 	userID := getUserIDFromContext(ctx)
@@ -123,7 +115,8 @@ func (r *Server) CreateChatAssistant(ctx *gin.Context) {
 
 	// Подготовка данных для отправки на Python-сервер
 	trainModelRequest := map[string]string{
-		"model_name":          fmt.Sprintf("assistant_%s", assistantID), // Используем String() для UUID
+		"assistant_name":      fmt.Sprintf("assistant_%s", assistantID), // Используем String() для UUID
+		"model_name":          req.ModelName,
 		"txt_files_directory": fmt.Sprintf("/tmp/assistants/%s", assistantID),
 	}
 
@@ -220,7 +213,7 @@ func (r *Server) SendMessage(ctx *gin.Context) {
 	defer resp.Body.Close()
 
 	// Чтение ответа от Python-сервера
-	var answerResponse map[string]string
+	var answerResponse models.ModelResponse
 	if err := json.NewDecoder(resp.Body).Decode(&answerResponse); err != nil {
 		r.logger.Error("Error decoding response from Python server", zap.Error(err))
 		ctx.JSON(http.StatusInternalServerError, gin.H{"error": "Failed to decode response from Python server"})
@@ -228,7 +221,7 @@ func (r *Server) SendMessage(ctx *gin.Context) {
 	}
 
 	// Отправляем ответ на фронт
-	ctx.JSON(http.StatusOK, gin.H{"message": answerResponse["message"]})
+	ctx.JSON(http.StatusOK, gin.H{"message": answerResponse.Answer})
 }
 
 func (r *Server) GetChat(ctx *gin.Context) {}
