@@ -93,9 +93,24 @@
                           <option value="3.2-1B">LLaMA 3.2-1B-instruct (менее ресурсоемкая)</option>
                           <option value="3.2-3B">LLaMA 3.2-3B-instruct (точнее, но требует больше ресурсов)</option>
                         </select>
-                      </form>
-                    
-
+                    </form>
+                </div>
+                <div class="embs">
+                    <p class="custom-title">Выбор embadding models</p>
+                    <form class="form-emb">
+                        <label for="emb-select"></label>
+                        <select name="emb-select" id="emb-select" class="emb-select">
+                          <option value="MiniLM">sentence-transformers/all-MiniLM-L6-v2 (быстрая и легкая)</option>
+                          <option value="multilingual">intfloat/multilingual-e5-large (более точная, но медленная)</option>
+                        </select>
+                    </form>
+                </div>
+                <div class="chunk_size">
+                    <p class="custom-title">Выбор chunk_size</p>
+                    <form class="form-chnk">
+                        <label for="chnk-select"></label>
+                        <input type="number" name="chnk-select" id="chnk-select" value="512" required>
+                    </form>
                 </div>
                 <div class="logo-custom">
                     <p class="custom-title">Логотип</p>
@@ -159,26 +174,23 @@
                             <input type="color" id="userColor" name="userColor" value="#05AAE6"  class="color-custom-input">
                             <button id="applyUserColor" class="base-submit"></button>
                         </form>
-                        
                     </div>
                 </div>
-                <button id="createAssistantBtn" class="create-assistant-btn">Создать ассистента</button>
-
             </section>
             
         </section>
         <section class="viewport">
             <h2 class="major-title">Просмотр решения</h2>
             <div class="major-view-buttons">
-                <button class="major-save">Сохранить</button>
-                <button class="major-export">Экспорт</button>
+                <button id="createAssistantBtn" class="major-save">Создать</button>
+                <button id="exportBtn"class="major-export">Экспорт</button>
             </div>
             <div id="window-view" class="window-view">
                 <div id="header-window" class="header-window">Название ассистента</div>
                 <div id="dialog" class="dialog"></div>
                 <div class="window-ask" id="window-ask">
                     <input type="text" class="input-message" id="message" placeholder="Введите сообщение...">
-                    <button id="send-btn">Отправить</button>
+                    <button id="send-btn"></button>
                 </div>
             </div>
         </section>

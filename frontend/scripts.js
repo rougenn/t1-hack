@@ -31,6 +31,8 @@ document.addEventListener('DOMContentLoaded', function () {
     createAssistantBtn.addEventListener('click', function () {
         const assistantName = document.getElementById('name').value;
         const modelName = document.getElementById('llm-select').value;
+        const embaddingName = document.getElementById('emb-select').value;
+        const chunkSize = document.getElementById('chnk-select').value;
         const filesInput = document.getElementById('document');  // Элемент для загрузки файлов
         const files = filesInput.files;
 
@@ -42,6 +44,8 @@ document.addEventListener('DOMContentLoaded', function () {
         const formData = new FormData();
         formData.append('assistant_name', assistantName);
         formData.append('model_name', modelName);
+        formData.append('embeddings_model_id', embaddingName);
+        formData.append('chunk_size', chunkSize);
 
         // Добавляем файлы в formData, если они выбраны
         if (files.length > 0) {
@@ -142,7 +146,7 @@ document.addEventListener('DOMContentLoaded', function () {
 
         // Отображаем сообщение пользователя
         const userMessageElement = document.createElement('div');
-        userMessageElement.className = 'message user';
+        userMessageElement.className = 'message user-message';
         userMessageElement.textContent = message;
         dialog.appendChild(userMessageElement);
         dialog.scrollTop = dialog.scrollHeight;
@@ -165,7 +169,13 @@ document.addEventListener('DOMContentLoaded', function () {
             });
 
             if (!response.ok) {
-                throw new Error("Ошибка при отправке сообщения.");
+                if (response.status === 401) {  // 401 - Unauthorized, токен истек
+                    console.log("Token expired. Trying to refresh...");
+                    await refreshAccessToken();  // Обновляем токены
+                    return addEventListener(formData);  // повторяем запрос после обновления токена
+                } else {
+                    throw new Error('Ошибка при создании ассистента. Пожалуйста, попробуйте позже.');
+                }
             }
 
             const data = await response.json();
@@ -173,7 +183,7 @@ document.addEventListener('DOMContentLoaded', function () {
 
             // Отображаем сообщение ассистента
             const assistantMessageElement = document.createElement('div');
-            assistantMessageElement.className = 'message assistant';
+            assistantMessageElement.className = 'message bot-message';
             assistantMessageElement.textContent = assistantMessage;
             dialog.appendChild(assistantMessageElement);
             dialog.scrollTop = dialog.scrollHeight;
@@ -260,12 +270,262 @@ document.addEventListener('DOMContentLoaded', function () {
     // Применение цвета пользователя
     applyColor('userColor', 'window-ask', 'backgroundColor');
 
-    // Обработка изменения названия ассистента
-    const nameForm = document.getElementById('customName');
-    const nameInput = document.getElementById('name');
-
-    nameForm.addEventListener('submit', function(event) {
-        event.preventDefault(); // Предотвращаем отправку формы
-        headerWindow.textContent = nameInput.value;
+    // Обработка отправки сообщений
+    messageInput.addEventListener('keypress', function(event) {
+        if (event.key === 'Enter') {
+            event.preventDefault(); // Предотвращаем отправку формы
+            sendMessage();
+        }
     });
+
+    async function sendMessage() {
+        const userMessage = messageInput.value.trim();
+        if (userMessage === '') return;
+
+        // Создаем элемент для сообщения пользователя
+        const userMessageElement = document.createElement('div');
+        userMessageElement.className = 'message user-message';
+        userMessageElement.textContent = userMessage;
+
+        // Добавляем сообщение в диалог
+        dialog.appendChild(userMessageElement);
+
+        // Прокручиваем окно чата вниз
+        dialog.scrollTop = dialog.scrollHeight;
+
+        // Очистить поле ввода
+        messageInput.value = '';
+
+        // Блокируем интерфейс отправки сообщений, пока идет запрос
+        sendBtn.disabled = true;
+        messageInput.disabled = true;
+
+        try {
+            // Отправляем сообщение
+            const response = await fetch(`http://localhost:8090/api/chats/send/${assistantId}`, {
+                method: 'POST',
+                headers: {
+                    'Content-Type': 'application/json',
+                    'Authorization': `Bearer ${accessToken}`,
+                },
+                body: JSON.stringify({ message: userMessage })
+            });
+
+            if (!response.ok) {
+                if (response.status === 401) {  // 401 - Unauthorized, токен истек
+                    console.log("Token expired. Trying to refresh...");
+                    await refreshAccessToken();  // Обновляем токены
+                    return sendMessage(formData);  // повторяем запрос после обновления токена
+                } else {
+                    throw new Error('Ошибка при создании ассистента. Пожалуйста, попробуйте позже.');
+                }
+            }
+
+            const data = await response.json();
+            const assistantMessage = data.message;
+
+            // Отображаем сообщение ассистента
+            const assistantMessageElement = document.createElement('div');
+            assistantMessageElement.className = 'message bot-message';
+            assistantMessageElement.textContent = assistantMessage;
+            dialog.appendChild(assistantMessageElement);
+            dialog.scrollTop = dialog.scrollHeight;
+        } catch (error) {
+            alert(error.message);
+        } finally {
+            // Восстанавливаем интерфейс отправки сообщений
+            sendBtn.disabled = false;
+            messageInput.disabled = false;
+        }
+    }
+
+    // Функция для генерации HTML-кода
+    function generateExportHTML() {
+        const html = `
+            <div class="window-view" id="window-view">
+                <div class="header-window" id="header-window">
+                    Название ассистента
+                </div>
+                <div class="dialog" id="dialog">
+                    <!-- Здесь будут добавляться сообщения -->
+                </div>
+                <form action="/submit-message" method="post" class="window-ask" id="window-ask">
+                    <input type="text" name="message" id="message" placeholder="Написать запрос" class="input-message">
+                    <button id="applyMessage" class="base-submit"></button>
+                </form>
+            </div>
+        `;
+        return html;
+    }
+
+    // Функция для генерации CSS-кода
+    function generateExportCSS() {
+        const css = `
+            .window-view {
+                width: 100%;
+                height: 60vh;
+                background-color: ${windowView.style.backgroundColor};
+                margin-top: 2vw;
+                border-radius: 20px;
+                position: relative;
+                border: 1px solid var(--color-border-light);
+                overflow: hidden;
+            }
+
+            .header-window {
+                padding: 1vw 2vw;
+                font-weight: 700;
+                font-size: 18px;
+                line-height: 24px;
+                color: ${headerWindow.style.color};
+                width: 100%;
+                background-color: ${headerWindow.style.backgroundColor};
+                height: auto;
+                border-radius: 20px 20px 0 0;
+            }
+
+            .dialog {
+                overflow-y: auto;
+                height: 300px; /* Установите нужную высоту */
+                padding: 10px;
+                display: flex;
+                flex-direction: column;
+                width: 100%; /* Убедитесь, что контейнер имеет достаточную ширину */
+            }
+
+            .dialog::after {
+                content: '';
+                display: table;
+                clear: both;
+            }
+
+            .window-ask {
+                padding: 1vw 2vw;
+                width: 100%;
+                height: auto;
+                background-color: ${messageInput.style.backgroundColor} !important;
+                position: absolute;
+                bottom: 0;
+                left: 0;
+                right: 0;
+                display: flex;
+            }
+
+            .input-message {
+                width: 100%;
+                background-color: ${messageInput.style.backgroundColor} !important;
+            }
+
+            .input-message::placeholder {
+                font-size: 18px;
+            }
+
+            input:focus {
+                outline: none;
+            }
+
+            .base-submit {
+                background-image: url(./icons/submit.svg);
+                width: 15px;
+                height: 15px;
+                border: none;
+                background-color: transparent;
+                margin-top: 13px;
+                background-repeat: no-repeat;
+            }
+
+            /* Применение цветов к сообщениям */
+            .bot-message {
+                background-color: ${document.getElementById('assistentColor').value};
+                color: ${document.getElementById('textColor').value};
+            }
+
+            .user-message {
+                background-color: ${document.getElementById('userColor').value};
+                color: ${document.getElementById('textColor').value};
+            }
+        `;
+        return css;
+    }
+
+    // Функция для генерации JavaScript-кода
+    function generateExportJS() {
+        const js = `
+            document.getElementById('window-ask').addEventListener('submit', function(event) {
+                event.preventDefault();
+                const userMessage = document.getElementById('message').value.trim();
+                if (userMessage === '') return;
+
+                const userMessageElement = document.createElement('div');
+                userMessageElement.className = 'message user-message';
+                userMessageElement.textContent = userMessage;
+                document.getElementById('dialog').appendChild(userMessageElement);
+                document.getElementById('message').value = '';
+                document.getElementById('dialog').scrollTop = document.getElementById('dialog').scrollHeight;
+
+                fetch('/submit-message', {
+                    method: 'POST',
+                    headers: {
+                        'Content-Type': 'application/json'
+                    },
+                    body: JSON.stringify({ message: userMessage })
+                })
+                .then(response => response.json())
+                .then(data => {
+                    const assistantMessage = data.response;
+                    const assistantMessageElement = document.createElement('div');
+                    assistantMessageElement.className = 'message bot-message';
+                    assistantMessageElement.textContent = assistantMessage;
+                    document.getElementById('dialog').appendChild(assistantMessageElement);
+                    document.getElementById('dialog').scrollTop = document.getElementById('dialog').scrollHeight;
+                })
+                .catch(error => {
+                    console.error('Ошибка при отправке сообщения:', error);
+                    const errorMessageElement = document.createElement('div');
+                    errorMessageElement.className = 'message error';
+                    errorMessageElement.textContent = 'Ошибка при отправке сообщения';
+                    document.getElementById('dialog').appendChild(errorMessageElement);
+                    document.getElementById('dialog').scrollTop = document.getElementById('dialog').scrollHeight;
+                });
+            });
+        `;
+        return js;
+    }
+
+    // Функция для скачивания экспортированного кода
+    function downloadExport() {
+        const html = generateExportHTML();
+        const css = generateExportCSS();
+        const js = generateExportJS();
+
+        const exportCode = `
+            <!DOCTYPE html>
+            <html lang="en">
+            <head>
+                <meta charset="UTF-8">
+                <meta name="viewport" content="width=device-width, initial-scale=1.0">
+                <title>Окно знаний | YSL</title>
+                <style>${css}</style>
+            </head>
+            <body>
+                ${html}
+                <script>${js}</script>
+            </body>
+            </html>
+        `;
+
+        const blob = new Blob([exportCode], { type: 'text/html' });
+        const url = URL.createObjectURL(blob);
+        const a = document.createElement('a');
+        a.href = url;
+        a.download = 'exported_dialog.html';
+        document.body.appendChild(a);
+        a.click();
+        document.body.removeChild(a);
+        URL.revokeObjectURL(url);
+    }
+
+    // Привязываем функцию скачивания к кнопке экспорта
+    const exportBtn = document.getElementById('exportBtn');
+    exportBtn.addEventListener('click', downloadExport);
 });
