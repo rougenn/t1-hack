@@ -712,35 +712,30 @@ input:focus{
   background-color: #0056b3;
 }
 
-/* Стиль сообщений */
 .bot-message, .user-message {
   max-width: 70%;
   padding: 10px;
   border-radius: 10px;
-  /* margin: 0.8vw 1vw; */
+  margin: 0.8vw 1vw;
   line-height: 1.5;
   font-size: 16px;
 }
 
-/* Сообщения бота */
 .bot-message {
   background-color: var(--color-grey-light);
   color: var(--color-grey-text);
   text-align: left;
-  margin-right: auto; /* Прижимается к левой стороне */
+  margin-right: auto; 
   border: 1px solid var(--color-border);
 }
 
-/* Сообщения пользователя */
 .user-message {
   background-color: var(--color-main);
   color: var(--color-white);
   text-align: right;
-  margin-left: auto; /* Прижимается к правой стороне */
+  margin-left: auto; 
   border: 1px solid var(--color-border);
 }
-
-
 
 #documentForm div {
   position: relative;
@@ -823,4 +818,15 @@ input:focus{
 
 .create-assistant-btn:hover {
   background-color: #005A8A;
+}
+
+/* Применение цветов к сообщениям */
+.bot-message {
+  background-color: var(--assistentColor, var(--color-grey-light));
+  color: var(--textColor, var(--color-grey-text));
+}
+
+.user-message {
+  background-color: var(--userColor, var(--color-main));
+  color: var(--textColor, var(--color-white));
 }

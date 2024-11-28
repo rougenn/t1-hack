@@ -242,11 +242,11 @@ document.addEventListener('DOMContentLoaded', function () {
         const colorInput = document.getElementById(colorInputId);
         const targetElement = document.getElementById(targetElementId);
         const applyButton = document.getElementById(`apply${colorInputId.charAt(0).toUpperCase() + colorInputId.slice(1)}`);
-
+    
         applyButton.addEventListener('click', function(event) {
             event.preventDefault(); // Предотвращаем отправку формы
             targetElement.style[styleProperty] = colorInput.value;
-
+    
             // Применяем цвет к элементам в окне диалога и шапке
             if (targetElementId === 'window-view') {
                 dialog.style[styleProperty] = colorInput.value;
@@ -261,19 +261,19 @@ document.addEventListener('DOMContentLoaded', function () {
             }
         });
     }
-
+    
     // Применение цвета фона
     applyColor('backgroundColor', 'window-view', 'backgroundColor');
-
+    
     // Применение цвета текста
     applyColor('textColor', 'dialog', 'color');
-
+    
     // Применение цвета ассистента
     applyColor('assistentColor', 'header-window', 'color');
-
+    
     // Применение цвета пользователя
     applyColor('userColor', 'window-ask', 'backgroundColor');
-
+    
     // Обработка изменения названия ассистента
     const nameForm = document.getElementById('customName');
     const nameInput = document.getElementById('name');
@@ -291,24 +291,58 @@ document.addEventListener('DOMContentLoaded', function () {
         }
     });
 
-    function sendMessage() {
+    async function sendMessage() {
         const userMessage = messageInput.value.trim();
         if (userMessage === '') return;
-
+    
         // Создаем элемент для сообщения пользователя
         const userMessageElement = document.createElement('div');
-        userMessageElement.className = 'message user';
+        userMessageElement.className = 'message user-message';
         userMessageElement.textContent = userMessage;
-
+    
         // Добавляем сообщение в диалог
         dialog.appendChild(userMessageElement);
-
+    
         // Прокручиваем окно чата вниз
         dialog.scrollTop = dialog.scrollHeight;
-
+    
         // Очистить поле ввода
         messageInput.value = '';
-
-        // Здесь можно добавить логику для отправки сообщения на сервер, если необходимо
+    
+        // Блокируем интерфейс отправки сообщений, пока идет запрос
+        sendBtn.disabled = true;
+        messageInput.disabled = true;
+    
+        try {
+            // Отправляем сообщение
+            const response = await fetch(`http://localhost:8090/api/chats/send/${assistantId}`, {
+                method: 'POST',
+                headers: {
+                    'Content-Type': 'application/json',
+                    'Authorization': `Bearer ${accessToken}`,
+                },
+                body: JSON.stringify({ message: userMessage })
+            });
+    
+            if (!response.ok) {
+                throw new Error("Ошибка при отправке сообщения.");
+            }
+    
+            const data = await response.json();
+            const assistantMessage = data.message;
+    
+            // Отображаем сообщение ассистента
+            const assistantMessageElement = document.createElement('div');
+            assistantMessageElement.className = 'message bot-message';
+            assistantMessageElement.textContent = assistantMessage;
+            dialog.appendChild(assistantMessageElement);
+            dialog.scrollTop = dialog.scrollHeight;
+        } catch (error) {
+            alert(error.message);
+        } finally {
+            // Восстанавливаем интерфейс отправки сообщений
+            sendBtn.disabled = false;
+            messageInput.disabled = false;
+        }
     }
 });
