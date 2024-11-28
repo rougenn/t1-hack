@@ -19,20 +19,18 @@ import (
 var licenseInitialized = false
 
 func InitLicense() {
-    if licenseInitialized {
-        return
-    }
+	if licenseInitialized {
+		return
+	}
 
-    err := license.SetMeteredKey("a6e0d818aba9dc2726be5a434cdaccfd2312692f72346561a37cca63e750f2e9")
-    if err != nil {
-        log.Fatalf("Failed to set UniPDF license key: %v", err)
-    }
+	err := license.SetMeteredKey("a6e0d818aba9dc2726be5a434cdaccfd2312692f72346561a37cca63e750f2e9")
+	if err != nil {
+		log.Fatalf("Failed to set UniPDF license key: %v", err)
+	}
 
-    log.Println("UniPDF license key set successfully.")
-    licenseInitialized = true
+	log.Println("UniPDF license key set successfully.")
+	licenseInitialized = true
 }
-
-
 
 // Функция для извлечения текста из PDF файла
 func PDftotext(filePath string) (string, error) {
@@ -102,52 +100,52 @@ func DOCXToPDF(inputFilePath string, outputFilePath string) error {
 
 // Главная функция, которая обрабатывает файлы в зависимости от их расширения
 func FileToText(filePath string) (string, error) {
-    InitLicense()
+	InitLicense()
 
-    // Проверяем, существует ли файл
-    info, err := os.Stat(filePath)
-    if os.IsNotExist(err) {
-        return "", fmt.Errorf("Файл не найден: %s", filePath)
-    }
+	// Проверяем, существует ли файл
+	info, err := os.Stat(filePath)
+	if os.IsNotExist(err) {
+		return "", fmt.Errorf("Файл не найден: %s", filePath)
+	}
 
-    if info.IsDir() {
-        return "", fmt.Errorf("Указанный путь является директорией, а не файлом: %s", filePath)
-    }
+	if info.IsDir() {
+		return "", fmt.Errorf("Указанный путь является директорией, а не файлом: %s", filePath)
+	}
 
-    ext := strings.ToLower(filepath.Ext(filePath))
+	ext := strings.ToLower(filepath.Ext(filePath))
 
-    switch ext {
-    case ".txt":
-        content, err := ioutil.ReadFile(filePath)
-        if err != nil {
-            return "", fmt.Errorf("Ошибка при чтении файла: %v", err)
-        }
-        return string(content), nil
+	switch ext {
+	case ".txt":
+		content, err := ioutil.ReadFile(filePath)
+		if err != nil {
+			return "", fmt.Errorf("Ошибка при чтении файла: %v", err)
+		}
+		return string(content), nil
 
-    case ".pdf":
-        text, err := PDftotext(filePath)
-        if err != nil {
-            return "", fmt.Errorf("Ошибка при извлечении текста из PDF: %v", err)
-        }
-        return text, nil
+	case ".pdf":
+		text, err := PDftotext(filePath)
+		if err != nil {
+			return "", fmt.Errorf("Ошибка при извлечении текста из PDF: %v", err)
+		}
+		return text, nil
 
-    case ".docx":
-        tempDir := os.TempDir()
-        tempPDFPath := filepath.Join(tempDir, strings.TrimSuffix(filepath.Base(filePath), ".docx")+".pdf")
+	case ".docx":
+		tempDir := os.TempDir()
+		tempPDFPath := filepath.Join(tempDir, strings.TrimSuffix(filepath.Base(filePath), ".docx")+".pdf")
 
-        err := DOCXToPDF(filePath, tempPDFPath)
-        if err != nil {
-            return "", fmt.Errorf("Ошибка при конвертации DOCX в PDF: %v", err)
-        }
-        defer os.Remove(tempPDFPath) // Удаляем временный файл после использования
+		err := DOCXToPDF(filePath, tempPDFPath)
+		if err != nil {
+			return "", fmt.Errorf("Ошибка при конвертации DOCX в PDF: %v", err)
+		}
+		defer os.Remove(tempPDFPath) // Удаляем временный файл после использования
 
-        text, err := PDftotext(tempPDFPath)
-        if err != nil {
-            return "", fmt.Errorf("Ошибка при извлечении текста из PDF: %v", err)
-        }
-        return text, nil
+		text, err := PDftotext(tempPDFPath)
+		if err != nil {
+			return "", fmt.Errorf("Ошибка при извлечении текста из PDF: %v", err)
+		}
+		return text, nil
 
-    default:
-        return "", fmt.Errorf("Неподдерживаемый тип файла: %s", ext)
-    }
+	default:
+		return "", fmt.Errorf("Неподдерживаемый тип файла: %s", ext)
+	}
 }
