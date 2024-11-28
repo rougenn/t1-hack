@@ -802,6 +802,36 @@ input:focus{
   color: var(--color-grey-text);
 }
 
+.embs{
+  margin-top: 20px;
+
+}
+
+.form-emb{
+  margin-top: 5px;
+}
+
+.emb-select{
+  border: 1px solid var(--color-border-light);
+  border-radius: 5px;
+  color: var(--color-grey-text);
+}
+
+.chunk_size{
+  margin-top: 20px;
+
+}
+
+.form-chnk{
+  margin-top: 5px;
+}
+
+#chnk-select{
+  border: 1px solid var(--color-border-light);
+  border-radius: 5px;
+  color: var(--color-grey-text);
+}
+
 
 /* Применение цветов к сообщениям */
 .bot-message {
