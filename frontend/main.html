@@ -34,7 +34,7 @@
                     <form action="/submit-url" method="post" class="base-form" id="urlForm">
                         <div class="input-group input-url">
                             <label for="url"></label>
-                            <input type="url" id="url" name="url" placeholder="URL" class="base-placeholder placeholder-url input-custom">
+                            <input type="url" id="url" name="url" placeholder="URL" class="base-placeholder placeholder-url input-custom" multiple>
                         </div>
                         <button type="submit" class="base-submit"></button>
                     </form>
@@ -46,7 +46,7 @@
                                 <span class="upload-icon"></span>
                                 Добавить файл
                             </label>
-                            <input type="file" id="document" name="document" accept=".pdf,.docx,.txt" class="input-custom" style="display: none;">
+                            <input type="file" id="document" name="document" accept=".pdf,.docx,.txt" class="input-custom" style="display: none;" multiple>
                         </div>
                         <button type="submit" class="base-submit"></button>
                     </form>
@@ -55,7 +55,7 @@
                     <form action="/submit-notion" method="post" class="base-form" id="notionForm">
                         <div class="input-group input-notion">
                             <label for="notion"></label>
-                            <input type="url" id="notion" name="notion" placeholder="Notion" class="base-placeholder placeholder-notion input-custom">
+                            <input type="url" id="notion" name="notion" placeholder="Notion" class="base-placeholder placeholder-notion input-custom" multiple>
                         </div>
                         <button type="submit" class="base-submit"></button>
                     </form>
@@ -64,7 +64,7 @@
                     <form action="/submit-confluence" method="post" class="base-form" id="confluenceForm">
                         <div class="input-group input-confluence">
                             <label for="confluence"></label>
-                            <input type="url" id="confluence" name="confluence" placeholder="Confluence" class="base-placeholder placeholder-confluence input-custom">
+                            <input type="url" id="confluence" name="confluence" placeholder="Confluence" class="base-placeholder placeholder-confluence input-custom" multiple>
                         </div>
                         <button type="submit" class="base-submit"></button>
                     </form>

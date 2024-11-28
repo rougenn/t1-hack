@@ -27,9 +27,11 @@ type RegisterRequest struct {
 
 // Модель запроса для создания ассистента
 type AssistantRequest struct {
-	AssistantName string                  `form:"assistant_name" binding:"required"` // имя для ассистента
-	ModelName     string                  `form:"model_name" binding:"required"`     // имя для ассистента
-	Files         []*multipart.FileHeader `form:"files[]"`                           // Массив файлов
+	AssistantName      string                  `form:"assistant_name" binding:"required"` // имя для ассистента
+	ModelName          string                  `form:"model_name" binding:"required"`     // имя для ассистента
+	ChunkSize          string                  `form:"chunk_size" binding:"required"`
+	EmbenddingsModelId string                  `form:"embeddings_model_id" binding:"required"`
+	Files              []*multipart.FileHeader `form:"files[]"` // Массив файлов
 }
 
 type SendMessageRequest struct {

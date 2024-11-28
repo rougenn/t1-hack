@@ -8,13 +8,17 @@ def train_model():
     data = request.get_json()
     assistant_name = data['assistant_name']
     model_name = data['model_name']
+    chunk_size = data['chunk_size']
+    embeddings_model_id = data['embeddings_model_id']
+
     print(model_name)
     txt_files_directory = data['txt_files_directory']
 
     try:
         # Создаем и обучаем модель
         print(txt_files_directory)
-        model = RAGModel(model_name=assistant_name, database_path=txt_files_directory, llama_version=model_name)
+        model = RAGModel(model_name=assistant_name, database_path=txt_files_directory, llama_version=model_name,
+                         chunk_size=chunk_size, embeddings_model_id=embeddings_model_id)
         return jsonify({"status": "OK"}), 200
     except Exception as e:
         print(e)
