@@ -462,42 +462,48 @@ document.addEventListener('DOMContentLoaded', function () {
     // Функция для генерации JavaScript-кода
     function generateExportJS() {
         const js = `
-            document.getElementById('window-ask').addEventListener('submit', function(event) {
+            document.getElementById('window-ask').addEventListener('submit', async function(event) {
                 event.preventDefault();
                 const userMessage = document.getElementById('message').value.trim();
                 if (userMessage === '') return;
-
+    
                 const userMessageElement = document.createElement('div');
                 userMessageElement.className = 'message user-message';
                 userMessageElement.textContent = userMessage;
                 document.getElementById('dialog').appendChild(userMessageElement);
                 document.getElementById('message').value = '';
                 document.getElementById('dialog').scrollTop = document.getElementById('dialog').scrollHeight;
-
-                fetch('/submit-message', {
-                    method: 'POST',
-                    headers: {
-                        'Content-Type': 'application/json'
-                    },
-                    body: JSON.stringify({ message: userMessage })
-                })
-                .then(response => response.json())
-                .then(data => {
-                    const assistantMessage = data.response;
+    
+                try {
+                    const response = await fetch('http://localhost:8090/api/chats/send/${assistantId}', {
+                        method: 'POST',
+                        headers: {
+                            'Content-Type': 'application/json',
+                            'Authorization': 'Bearer ${accessToken}',
+                        },
+                        body: JSON.stringify({ message: userMessage })
+                    });
+    
+                    if (!response.ok) {
+                        throw new Error('Ошибка при отправке сообщения.');
+                    }
+    
+                    const data = await response.json();
+                    const assistantMessage = data.message;
+    
                     const assistantMessageElement = document.createElement('div');
                     assistantMessageElement.className = 'message bot-message';
                     assistantMessageElement.textContent = assistantMessage;
                     document.getElementById('dialog').appendChild(assistantMessageElement);
                     document.getElementById('dialog').scrollTop = document.getElementById('dialog').scrollHeight;
-                })
-                .catch(error => {
+                } catch (error) {
                     console.error('Ошибка при отправке сообщения:', error);
                     const errorMessageElement = document.createElement('div');
                     errorMessageElement.className = 'message error';
                     errorMessageElement.textContent = 'Ошибка при отправке сообщения';
                     document.getElementById('dialog').appendChild(errorMessageElement);
                     document.getElementById('dialog').scrollTop = document.getElementById('dialog').scrollHeight;
-                });
+                }
             });
         `;
         return js;
