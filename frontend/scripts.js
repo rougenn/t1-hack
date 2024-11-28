@@ -510,8 +510,6 @@ document.addEventListener('DOMContentLoaded', function () {
     }
 
     // Привязываем функцию скачивания к кнопке экспорта
-    const exportBtn = document.createElement('button');
-    exportBtn.textContent = 'Экспорт';
+    const exportBtn = document.getElementById('exportBtn');
     exportBtn.addEventListener('click', downloadExport);
-    document.body.appendChild(exportBtn);
 });

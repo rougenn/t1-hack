@@ -802,23 +802,6 @@ input:focus{
   color: var(--color-grey-text);
 }
 
-.create-assistant-btn {
-  position: fixed;
-  left: 20px;
-  bottom: 20px;
-  background-color: #0072C9;
-  color: white;
-  padding: 10px 20px;
-  font-size: 16px;
-  border: none;
-  border-radius: 5px;
-  cursor: pointer;
-  z-index: 1000;
-}
-
-.create-assistant-btn:hover {
-  background-color: #005A8A;
-}
 
 /* Применение цветов к сообщениям */
 .bot-message {
