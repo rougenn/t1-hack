@@ -168,7 +168,7 @@ document.addEventListener('DOMContentLoaded', function () {
                 if (response.status === 401) {  // 401 - Unauthorized, токен истек
                     console.log("Token expired. Trying to refresh...");
                     await refreshAccessToken();  // Обновляем токены
-                    return sendCreateAssistantRequest(formData);  // повторяем запрос после обновления токена
+                    return addEventListener(formData);  // повторяем запрос после обновления токена
                 } else {
                     throw new Error('Ошибка при создании ассистента. Пожалуйста, попробуйте позже.');
                 }
@@ -311,7 +311,7 @@ document.addEventListener('DOMContentLoaded', function () {
                 if (response.status === 401) {  // 401 - Unauthorized, токен истек
                     console.log("Token expired. Trying to refresh...");
                     await refreshAccessToken();  // Обновляем токены
-                    return sendCreateAssistantRequest(formData);  // повторяем запрос после обновления токена
+                    return sendMessage(formData);  // повторяем запрос после обновления токена
                 } else {
                     throw new Error('Ошибка при создании ассистента. Пожалуйста, попробуйте позже.');
                 }

@@ -93,9 +93,24 @@
                           <option value="3.2-1B">LLaMA 3.2-1B-instruct (менее ресурсоемкая)</option>
                           <option value="3.2-3B">LLaMA 3.2-3B-instruct (точнее, но требует больше ресурсов)</option>
                         </select>
-                      </form>
-                    
-
+                    </form>
+                </div>
+                <div class="embs">
+                    <p class="custom-title">Выбор embadding models</p>
+                    <form class="form-emb">
+                        <label for="emb-select"></label>
+                        <select name="emb-select" id="emb-select" class="emb-select">
+                          <option value="MiniLM">sentence-transformers/all-MiniLM-L6-v2 (быстрая и легкая)</option>
+                          <option value="multilingual">intfloat/multilingual-e5-large (более точная, но медленная)</option>
+                        </select>
+                    </form>
+                </div>
+                <div class="chunk_size">
+                    <p class="custom-title">Выбор chunk_size</p>
+                    <form class="form-chnk">
+                        <label for="chnk-select"></label>
+                        <input type="time" name="chnk-select" id="chnk-select" value="512">
+                    </form>
                 </div>
                 <div class="logo-custom">
                     <p class="custom-title">Логотип</p>
