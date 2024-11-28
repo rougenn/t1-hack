@@ -3,14 +3,14 @@ package models
 import (
 	"mime/multipart"
 
-	"github.com/gin-gonic/gin"
+	"github.com/google/uuid"
 )
 
 type Admin struct {
-	ID           int    `json:"id"`
-	Email        string `json:"email"`
-	PasswordHash string `json:"-"`          // хеш пароля. будем сравнивать именно хеш.
-	CreatedAt    int64  `json:"created_at"` // время создания юникс
+	ID           uuid.UUID `json:"id"`
+	Email        string    `json:"email"`
+	PasswordHash string    `json:"-"`
+	CreatedAt    int64     `json:"created_at"`
 }
 
 // Структура запроса для логина
@@ -27,9 +27,8 @@ type RegisterRequest struct {
 
 // Модель запроса для создания ассистента
 type AssistantRequest struct {
-	URL   string          `json:"url" binding:"required"` // URL для ассистента
-	Files *multipart.Form `json:"files"`                  // Файлы, передаваемые в запросе
-	Ctx   *gin.Context    `json:"-"`                      // Контекст для доступа к файлам
+	URL   string                  `form:"url" binding:"required"` // URL для ассистента
+	Files []*multipart.FileHeader `form:"files[]"`                // Массив файлов
 }
 
 type SendMessageRequest struct {

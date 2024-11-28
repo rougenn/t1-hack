@@ -7,13 +7,13 @@ import (
 	"errors"
 	"fmt"
 	"net/http"
-	"strconv"
 	"t1/internal/app/assistants"
 	"t1/internal/app/models"
 	"t1/internal/app/users"
 	"t1/internal/pkg/db"
 
 	"github.com/gin-gonic/gin"
+	"github.com/google/uuid"
 	"go.uber.org/zap"
 )
 
@@ -74,72 +74,105 @@ func (r *Server) newAPI() *gin.Engine {
 	engine.POST("/api/admin/signup", r.Register)
 	engine.POST("/api/admin/refresh-token", r.RefreshToken)
 
-	engine.POST("/api/admin/create-chat-assistant", r.CreateChatAssistant) // реализация загрузки файлов
-	engine.POST("/api/get-chat/:id", r.GetChat)                            // подгрузка страницы чата
-	engine.POST("/api/chats/:id/send", r.SendMessage)                      // запросы и сообщения в чате
+	protected := engine.Group("/")
+	protected.Use(AuthMiddleware())
 
-	// protected := engine.Group("/api/")
-	// protected.Use(AuthMiddleware())
+	protected.POST("/api/admin/create-chat-assistant", r.CreateChatAssistant) // реализация загрузки файлов
+	protected.POST("/api/chats/send/:id", r.SendMessage)                      // запросы и сообщения в чате
 
 	return engine
 }
 
-// CreateChatAssistant создает новый чат-ассистент, обучая его с помощью Python-сервера
+// если отправляем пустой файл питон серв падает !!!!!!!!!
 func (r *Server) CreateChatAssistant(ctx *gin.Context) {
+	// Получаем userID как uuid.UUID из контекста
 	userID := getUserIDFromContext(ctx)
+	if userID == uuid.Nil { // Проверка на nil UUID
+		r.logger.Error("Failed to get user ID from context")
+		ctx.JSON(http.StatusUnauthorized, gin.H{"error": "Unauthorized"})
+		return
+	}
+
+	r.logger.Info("Received request to create assistant", zap.String("user_id", userID.String()))
 
 	var req models.AssistantRequest
-	if err := ctx.ShouldBindJSON(&req); err != nil {
+	// Логирование перед парсингом запроса
+	r.logger.Info("Parsing request body")
+
+	if err := ctx.ShouldBind(&req); err != nil {
+		// Логирование ошибки при парсинге запроса
 		r.logger.Error("Error parsing request body", zap.Error(err))
 		ctx.JSON(http.StatusBadRequest, gin.H{"error": err.Error()})
 		return
 	}
 
+	// Логирование успешного парсинга запроса
+	r.logger.Info("Request body parsed successfully", zap.Any("assistant_request", req))
+
 	// Создаем ассистента в базе данных
 	assistantID, err := assistants.CreateChatAssistant(r.DB, userID, req, ctx)
 	if err != nil {
+		// Логирование ошибки при создании ассистента
 		r.logger.Error("Error creating assistant", zap.Error(err))
 		ctx.JSON(http.StatusInternalServerError, gin.H{"error": "Failed to create assistant"})
 		return
 	}
 
+	// Логирование успешного создания ассистента
+	r.logger.Info("Successfully created assistant", zap.String("assistant_id", assistantID)) // Логируем как строку UUID
+
 	// Подготовка данных для отправки на Python-сервер
 	trainModelRequest := map[string]string{
-		"model_name":          fmt.Sprintf("assistant_%d", assistantID),
-		"txt_files_directory": req.URL, // Указание пути к файлам
+		"model_name":          fmt.Sprintf("assistant_%s", assistantID), // Используем String() для UUID
+		"txt_files_directory": fmt.Sprintf("/tmp/assistants/%s", assistantID),
 	}
+
+	// Логирование данных для обучения модели
+	r.logger.Info("Preparing data for training model", zap.Any("train_model_request", trainModelRequest))
 
 	trainModelBody, err := json.Marshal(trainModelRequest)
 	if err != nil {
+		// Логирование ошибки при маршалинге
 		r.logger.Error("Error marshalling train model request", zap.Error(err))
 		ctx.JSON(http.StatusInternalServerError, gin.H{"error": "Failed to marshal train model request"})
 		return
 	}
 
 	// Отправляем запрос на Python-сервер для обучения модели
-	resp, err := http.Post("http://python-server-address/train", "application/json", bytes.NewBuffer(trainModelBody))
+	r.logger.Info("Sending request to Python server for model training")
+	resp, err := http.Post("http://127.0.0.1:5000/train", "application/json", bytes.NewBuffer(trainModelBody))
 	if err != nil {
+		// Логирование ошибки при отправке запроса
 		r.logger.Error("Error sending request to Python server", zap.Error(err))
 		ctx.JSON(http.StatusInternalServerError, gin.H{"error": "Failed to send request to Python server"})
 		return
 	}
 	defer resp.Body.Close()
 
+	// Логирование статуса ответа от Python-сервера
+	r.logger.Info("Received response from Python server", zap.Int("status_code", resp.StatusCode))
+
 	if resp.StatusCode != http.StatusOK {
+		// Логирование ошибки, если статус код не OK
 		r.logger.Error("Failed to train model", zap.Int("status_code", resp.StatusCode))
 		ctx.JSON(http.StatusInternalServerError, gin.H{"error": "Failed to train model"})
 		return
 	}
 
 	// Успешно, возвращаем ID ассистента
-	ctx.JSON(http.StatusOK, gin.H{"assistant_id": assistantID})
+	r.logger.Info("Assistant training completed successfully")
+	ctx.JSON(http.StatusOK, gin.H{"assistant_id": assistantID}) // Отправляем как строку UUID
 }
-
-func (r *Server) GetChat(ctx *gin.Context) {}
 
 // SendMessage обрабатывает сообщения от пользователя и отправляет запрос на Python-сервер
 func (r *Server) SendMessage(ctx *gin.Context) {
+	// Получаем userID как uuid.UUID из контекста
 	userID := getUserIDFromContext(ctx)
+	if userID == uuid.Nil { // Проверка на nil UUID
+		r.logger.Error("Failed to get user ID from context")
+		ctx.JSON(http.StatusUnauthorized, gin.H{"error": "Unauthorized"})
+		return
+	}
 
 	// Извлекаем assistantID из URL
 	assistantIDStr := ctx.Param("id")
@@ -149,8 +182,8 @@ func (r *Server) SendMessage(ctx *gin.Context) {
 		return
 	}
 
-	// Преобразуем assistantID в целое число
-	assistantID, err := strconv.Atoi(assistantIDStr)
+	// Преобразуем assistantID в UUID
+	assistantID, err := uuid.Parse(assistantIDStr)
 	if err != nil {
 		r.logger.Error("Invalid Assistant ID", zap.Error(err))
 		ctx.JSON(http.StatusBadRequest, gin.H{"error": "Invalid Assistant ID"})
@@ -164,18 +197,10 @@ func (r *Server) SendMessage(ctx *gin.Context) {
 		return
 	}
 
-	// Сохраняем сообщение в базе данных
-	err = assistants.SaveMessageToDB(r.DB, assistantID, userID, req.Message)
-	if err != nil {
-		r.logger.Error("Error saving message to database", zap.Error(err))
-		ctx.JSON(http.StatusInternalServerError, gin.H{"error": "Failed to save message"})
-		return
-	}
-
 	// Формируем запрос для отправки на Python-сервер
 	questionRequest := map[string]string{
-		"model_name": fmt.Sprintf("assistant_%d", assistantID), // Имя модели
-		"question":   req.Message,                              // Вопрос от пользователя
+		"assistant_id": assistantID.String(), // Передаем UUID ассистента
+		"message":      req.Message,          // Сообщение от пользователя
 	}
 
 	questionBody, err := json.Marshal(questionRequest)
@@ -186,7 +211,7 @@ func (r *Server) SendMessage(ctx *gin.Context) {
 	}
 
 	// Отправляем запрос на Python-сервер для получения ответа
-	resp, err := http.Post("http://python-server-address/ask", "application/json", bytes.NewBuffer(questionBody))
+	resp, err := http.Post("http://127.0.0.1:5000/ask", "application/json", bytes.NewBuffer(questionBody))
 	if err != nil {
 		r.logger.Error("Error sending request to Python server", zap.Error(err))
 		ctx.JSON(http.StatusInternalServerError, gin.H{"error": "Failed to send request to Python server"})
@@ -203,8 +228,10 @@ func (r *Server) SendMessage(ctx *gin.Context) {
 	}
 
 	// Отправляем ответ на фронт
-	ctx.JSON(http.StatusOK, gin.H{"answer": answerResponse["answer"]})
+	ctx.JSON(http.StatusOK, gin.H{"message": answerResponse["message"]})
 }
+
+func (r *Server) GetChat(ctx *gin.Context) {}
 
 func (r *Server) Start() {
 	err := r.newAPI().Run(r.host)

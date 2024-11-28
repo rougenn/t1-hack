@@ -3,42 +3,30 @@ package assistants
 import (
 	"database/sql"
 	"fmt"
+
+	"github.com/google/uuid"
 )
 
-// SaveMessageToDB сохраняет сообщение в базе данных
-func SaveMessageToDB(db *sql.DB, assistantID, userID int, message string) error {
-	query := `
-		INSERT INTO message_history (assistant_id, user_id, message, created_at)
-		VALUES ($1, $2, $3, NOW())
-	`
-	_, err := db.Exec(query, assistantID, userID, message)
-	return err
-}
+// AddAssistantLink добавляет ссылку ассистента в таблицу
+func AddAssistantLink(DB *sql.DB, adminID uuid.UUID) (uuid.UUID, error) {
+	// Генерация нового UUID для ассистента
+	assistantID := uuid.New()
 
-// Функция для добавления ссылки ассистента в таблицу
-func AddAssistantLink(DB *sql.DB, userID int, assistantID, url string) (int, error) {
-	query := `
-		INSERT INTO assistant_links (user_id, assistant_id, url)
-		VALUES ($1, $2, $3)
-		RETURNING id
-	`
-	var id int
-	err := DB.QueryRow(query, userID, assistantID, url).Scan(&id)
-	if err != nil {
-		return 0, fmt.Errorf("failed to add assistant link: %w", err)
-	}
-	return id, nil
-}
+	// Генерация URL для чат-ассистента
+	assistantURL := fmt.Sprintf("http://localhost/chat/%s", assistantID.String())
 
-// Функция для записи статистики запросов и ответов в таблицу
-func AddAssistantStatistics(DB *sql.DB, linkID int, requestText, responseText string) error {
+	// Вставляем запись в таблицу assistant_links
 	query := `
-		INSERT INTO assistant_statistics (link_id, request_text, response_text)
-		VALUES ($1, $2, $3)
-	`
-	_, err := DB.Exec(query, linkID, requestText, responseText)
+        INSERT INTO assistant_links (assistant_id, id, url, created_at, updated_at)
+        VALUES ($1, $2, $3, EXTRACT(epoch FROM now())::BIGINT, EXTRACT(epoch FROM now())::BIGINT)
+        RETURNING id
+    `
+	var linkID uuid.UUID
+	err := DB.QueryRow(query, adminID, assistantID, assistantURL).Scan(&linkID)
 	if err != nil {
-		return fmt.Errorf("failed to add assistant statistics: %w", err)
+		return uuid.Nil, fmt.Errorf("failed to add assistant link: %w", err)
 	}
-	return nil
+
+	// Возвращаем UUID ссылки ассистента
+	return linkID, nil
 }

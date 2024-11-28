@@ -1,36 +1,34 @@
 -- Удаление таблиц, если они существуют
-DROP TABLE IF EXISTS assistant_statistics CASCADE;
-DROP TABLE IF EXISTS assistant_links CASCADE;
-DROP TABLE IF EXISTS admins CASCADE;
+-- DROP TABLE IF EXISTS assistant_statistics CASCADE;
+-- DROP TABLE IF EXISTS assistant_links CASCADE;
+-- DROP TABLE IF EXISTS admins CASCADE;
 
-
--- Создание таблицы для администраторов
+-- Создание таблицы для администраторов с UUID в качестве id
 CREATE TABLE IF NOT EXISTS admins (
-    id UUID PRIMARY KEY,       -- Используем UUID для уникальности
-    name TEXT NOT NULL,         -- Имя администратора
-    email TEXT NOT NULL UNIQUE  -- Электронная почта администратора
+    id UUID PRIMARY KEY DEFAULT uuid_generate_v4(),  -- Используем UUID в качестве идентификатора
+    email TEXT NOT NULL UNIQUE,
+    password_hash TEXT NOT NULL,
+    created_at BIGINT DEFAULT (EXTRACT(EPOCH FROM now())::BIGINT)
 );
 
-
--- Создание таблицы для хранения ссылок
+-- Создание таблицы для ссылок ассистента с UUID
 CREATE TABLE IF NOT EXISTS assistant_links (
-    id SERIAL PRIMARY KEY,               -- Уникальный идентификатор ссылки
-    assistant_id UUID NOT NULL,           -- Идентификатор ассистента (связан с администратором)
-    url TEXT NOT NULL,                    -- URL или ссылка
-    created_at BIGINT DEFAULT (EXTRACT(EPOCH FROM now())::BIGINT), -- Время создания ссылки
-    updated_at BIGINT DEFAULT (EXTRACT(EPOCH FROM now())::BIGINT), -- Время последнего обновления
-    FOREIGN KEY (assistant_id) REFERENCES admins(id) ON DELETE CASCADE -- Связь с таблицей админов
+    id UUID PRIMARY KEY DEFAULT uuid_generate_v4(),   -- UUID вместо SERIAL
+    assistant_id UUID NOT NULL,                        -- UUID для связи с ассистентом
+    url TEXT NOT NULL,                                 -- URL для ассистента
+    created_at BIGINT DEFAULT (EXTRACT(EPOCH FROM now())::BIGINT),
+    updated_at BIGINT DEFAULT (EXTRACT(EPOCH FROM now())::BIGINT),
+    FOREIGN KEY (assistant_id) REFERENCES admins(id) ON DELETE CASCADE
 );
 
-
--- Таблица для статистики запросов и ответов
+-- Создание таблицы для статистики запросов и ответов
 CREATE TABLE IF NOT EXISTS assistant_statistics (
-    id SERIAL PRIMARY KEY,               -- Уникальный идентификатор записи
-    link_id INT NOT NULL,                 -- Ссылка, к которой привязана статистика
-    request_time BIGINT DEFAULT (EXTRACT(EPOCH FROM now())::BIGINT), -- Время запроса
-    request_text TEXT NOT NULL,           -- Запрос пользователя
-    response_text TEXT NOT NULL,          -- Ответ модели
-    FOREIGN KEY (link_id) REFERENCES assistant_links(id) ON DELETE CASCADE -- Связь с таблицей ссылок
+    id SERIAL PRIMARY KEY,                            -- SERIAL первичный ключ
+    link_id UUID NOT NULL,                            -- UUID вместо INT
+    request_time BIGINT DEFAULT (EXTRACT(EPOCH FROM now())::BIGINT),
+    request_text TEXT NOT NULL,
+    response_text TEXT NOT NULL,
+    FOREIGN KEY (link_id) REFERENCES assistant_links(id) ON DELETE CASCADE  -- Ссылаемся на UUID
 );
 
 -- Индексы для улучшения производительности
