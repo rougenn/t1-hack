@@ -2,6 +2,10 @@
 -- DROP TABLE IF EXISTS assistant_statistics CASCADE;
 -- DROP TABLE IF EXISTS assistant_links CASCADE;
 -- DROP TABLE IF EXISTS admins CASCADE;
+-- Включение расширения uuid-ossp
+CREATE EXTENSION IF NOT EXISTS "uuid-ossp";
+
+-- Далее ваши остальные миграции
 
 -- Создание таблицы для администраторов с UUID в качестве id
 CREATE TABLE IF NOT EXISTS admins (
