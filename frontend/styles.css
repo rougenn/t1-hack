@@ -447,7 +447,7 @@ textarea::placeholder{
   background-color: var(--color-main);
   border: none;
   border-radius: 5px;
-  width: 11vw;
+  width: 16vw;
   height: 40px;
   color:var(--color-white);
   font-weight: 700;
@@ -851,4 +851,14 @@ input:focus{
   content: '';
   display: table;
   clear: both;
+}
+
+.bubble{
+    width: 50vw;
+    position: absolute;
+    top:0;
+    bottom: 0;
+    left: 0;
+    right: 0;
+    margin: auto;
 }

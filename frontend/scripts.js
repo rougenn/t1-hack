@@ -9,9 +9,9 @@ document.addEventListener('DOMContentLoaded', function() {
     const logoImage = document.querySelector('.img-example');
 
     // Проверка наличия кнопки
-    const applyMessageButton = document.getElementById('applyMessage');
-    if (!applyMessageButton) {
-        console.error('Кнопка с ID "applyMessage" не найдена');
+    const exportButton = document.getElementById('exportButton');
+    if (!exportButton) {
+        console.error('Кнопка с ID "exportButton" не найдена');
     }
 
     fontForm.addEventListener('submit', function(event) {
@@ -98,12 +98,6 @@ document.addEventListener('DOMContentLoaded', function() {
         }
     });
 
-    applyMessageButton.addEventListener('click', function(event) {
-        event.preventDefault(); // Предотвращаем отправку формы
-        console.log('Кнопка нажата'); // Отладочное сообщение
-        sendMessage();
-    });
-
     function sendMessage() {
         const userMessage = messageInput.value.trim();
         if (userMessage === '') return;
@@ -162,4 +156,167 @@ document.addEventListener('DOMContentLoaded', function() {
             reader.readAsDataURL(file);
         }
     });
+
+    // Обработка кнопки "Экспорт"
+    exportButton.addEventListener('click', function() {
+        console.log('Кнопка "Экспорт" нажата'); // Отладочное сообщение
+        const exportCode = generateExportCode();
+        console.log('Сгенерированный код:', exportCode); // Отладочное сообщение
+
+        // Создаем текстовый файл и запускаем его скачивание
+        const blob = new Blob([exportCode], { type: 'text/plain' });
+        const url = URL.createObjectURL(blob);
+        const a = document.createElement('a');
+        a.href = url;
+        a.download = 'dialog_code.txt';
+        document.body.appendChild(a);
+        a.click();
+        document.body.removeChild(a);
+        URL.revokeObjectURL(url);
+    });
+
+    function generateExportCode() {
+        const html = `
+            <div class="window-view" id="window-view">
+                <div class="header-window" id="header-window">
+                    Название ассистента
+                </div>
+                <div class="dialog" id="dialog">
+                    <!-- Здесь будут добавляться сообщения -->
+                </div>
+                <form action="/submit-message" method="post" class="window-ask" id="window-ask">
+                    <input type="text" name="message" id="message" placeholder="Написать запрос" class="input-message">
+                    <button id="applyMessage" class="base-submit"></button>
+                </form>
+            </div>
+        `;
+
+        const css = `
+            .window-view{
+                width: 100%;
+                height: 60vh;
+                background-color: #1C1F4A;
+                /* margin-left: 20px; */
+                margin-top: 2vw;
+                border-radius: 20px;
+                position: relative;
+                border: 1px solid var(--color-border-light);
+                overflow: hidden;
+            }
+
+            .header-window {
+                padding: 1vw 2vw;
+                font-weight: 700;
+                font-size: 18px;
+                line-height: 24px;
+                color: var(--color-white);
+                width: 100%;
+                background-color: var(--color-main);
+                height: auto;
+                border-radius: 20px 20px 0 0;
+                }
+            .dialog {
+                overflow-y: auto;
+                height: 300px; /* Установите нужную высоту */
+                padding: 10px;
+                display: flex;
+                flex-direction: column;
+                width: 100%; /* Убедитесь, что контейнер имеет достаточную ширину */
+                }
+
+            .dialog::after {
+                content: '';
+                display: table;
+                clear: both;
+                }
+            .window-ask{
+                padding: 1vw 2vw;
+                width: 100%;
+                height: auto;
+                background-color: var(--color-white) !important;
+                position: absolute;
+                bottom: 0;
+                left: 0;
+                right: 0;
+                display: flex;
+                }
+            .input-message{
+                width: 100%;
+                background-color: var(--color-white) !important;
+                }
+
+            .input-message::placeholder{
+                font-size: 18px;
+            }
+
+            input:focus{
+                outline: none;
+            }
+            .base-submit{
+                background-image: url(./icons/submit.svg);
+                width: 15px;
+                height: 15px;
+                border: none;
+                background-color: transparent;
+                margin-top: 13px;
+                background-repeat: no-repeat;
+                }
+        `;
+
+        const js = `
+            document.getElementById('window-ask').addEventListener('submit', function(event) {
+                event.preventDefault();
+                const userMessage = document.getElementById('message').value.trim();
+                if (userMessage === '') return;
+
+                const userMessageElement = document.createElement('div');
+                userMessageElement.className = 'message user';
+                userMessageElement.textContent = userMessage;
+                document.getElementById('dialog').appendChild(userMessageElement);
+                document.getElementById('message').value = '';
+                document.getElementById('dialog').scrollTop = document.getElementById('dialog').scrollHeight;
+
+                fetch('/submit-message', {
+                    method: 'POST',
+                    headers: {
+                        'Content-Type': 'application/json'
+                    },
+                    body: JSON.stringify({ message: userMessage })
+                })
+                .then(response => response.json())
+                .then(data => {
+                    const assistantMessage = data.response;
+                    const assistantMessageElement = document.createElement('div');
+                    assistantMessageElement.className = 'message assistant';
+                    assistantMessageElement.textContent = assistantMessage;
+                    document.getElementById('dialog').appendChild(assistantMessageElement);
+                    document.getElementById('dialog').scrollTop = document.getElementById('dialog').scrollHeight;
+                })
+                .catch(error => {
+                    console.error('Ошибка при отправке сообщения:', error);
+                    const errorMessageElement = document.createElement('div');
+                    errorMessageElement.className = 'message error';
+                    errorMessageElement.textContent = 'Ошибка при отправке сообщения';
+                    document.getElementById('dialog').appendChild(errorMessageElement);
+                    document.getElementById('dialog').scrollTop = document.getElementById('dialog').scrollHeight;
+                });
+            });
+        `;
+
+        return `
+            <!DOCTYPE html>
+            <html lang="en">
+            <head>
+                <meta charset="UTF-8">
+                <meta name="viewport" content="width=device-width, initial-scale=1.0">
+                <title>Окно знаний | YSL</title>
+                <style>${css}</style>
+            </head>
+            <body>
+                ${html}
+                <script>${js}</script>
+            </body>
+            </html>
+        `;
+    }
 });

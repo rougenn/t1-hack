@@ -1,0 +1,27 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Ассистент | YSL</title>
+    <link href="./styles.css" rel="stylesheet">
+    <link rel="shortcut icon" href="./icons/YSL.svg" type="image/x-icon">
+    <script src="./scripts.js" defer></script>
+</head>
+<body>
+    <div class="bubble">
+        <div class="window-view" id="window-view">
+            <div class="header-window" id="header-window">
+                Название ассистента
+            </div>
+            <div class="dialog" id="dialog">
+                <!-- Здесь будут добавляться сообщения -->
+            </div>
+            <form action="/submit-message" method="post" class="window-ask" id="window-ask">
+                <input type="text" name="message" id="message" placeholder="Написать запрос" class="input-message">
+                <button id="applyMessage" class="base-submit"></button>
+            </form>
+        </div>
+    </div>
+</body>
+</html>
