@@ -17,7 +17,7 @@ var jwtSecret = []byte("kljasdf;j;lasjdfhjkjk")
 func GenerateAccessToken(userID uuid.UUID) (string, error) {
 	claims := jwt.MapClaims{
 		"user_id": userID.String(), // Сохраняем UUID как строку
-		"exp":     time.Now().Add(2 * time.Second).Unix(),
+		"exp":     time.Now().Add(3 * time.Minute).Unix(),
 	}
 	token := jwt.NewWithClaims(jwt.SigningMethodHS256, claims)
 	return token.SignedString(jwtSecret)
