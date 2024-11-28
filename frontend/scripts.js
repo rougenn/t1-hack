@@ -31,6 +31,8 @@ document.addEventListener('DOMContentLoaded', function () {
     createAssistantBtn.addEventListener('click', function () {
         const assistantName = document.getElementById('name').value;
         const modelName = document.getElementById('llm-select').value;
+        const embaddingName = document.getElementById('emb-select').value;
+        const chunkSize = document.getElementById('chnk-select').value;
         const filesInput = document.getElementById('document');  // Элемент для загрузки файлов
         const files = filesInput.files;
 
@@ -42,6 +44,8 @@ document.addEventListener('DOMContentLoaded', function () {
         const formData = new FormData();
         formData.append('assistant_name', assistantName);
         formData.append('model_name', modelName);
+        formData.append('embeddings_model_id', embaddingName);
+        formData.append('chunk_size', chunkSize);
 
         // Добавляем файлы в formData, если они выбраны
         if (files.length > 0) {
