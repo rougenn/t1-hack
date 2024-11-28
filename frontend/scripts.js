@@ -359,104 +359,53 @@ document.addEventListener('DOMContentLoaded', function () {
     }
 
     // Функция для генерации CSS-кода
-    function generateExportCSS() {
-        const css = `
-            .window-view {
-                width: 100%;
-                height: 60vh;
-                background-color: ${windowView.style.backgroundColor};
-                margin-top: 2vw;
-                border-radius: 20px;
-                position: relative;
-                border: 1px solid var(--color-border-light);
-                overflow: hidden;
-            }
-
-            .header-window {
-                padding: 1vw 2vw;
-                font-weight: 700;
-                font-size: 18px;
-                line-height: 24px;
-                color: ${headerWindow.style.color};
-                width: 100%;
-                background-color: ${headerWindow.style.backgroundColor};
-                height: auto;
-                border-radius: 20px 20px 0 0;
-            }
-            window-ask{
-                padding: 1vw 2vw;
-                width: 100%;
-                height: auto;
-                background-color: var(--color-white) !important;
-                position: absolute;
-                bottom: 0;
-                left: 0;
-                right: 0;
-                display: flex;
-            }
-
-            .dialog {
-                overflow-y: auto;
-                height: 300px; /* Установите нужную высоту */
-                padding: 10px;
-                display: flex;
-                flex-direction: column;
-                width: 100%; /* Убедитесь, что контейнер имеет достаточную ширину */
-            }
-
-            .dialog::after {
-                content: '';
-                display: table;
-                clear: both;
-            }
-
-            .window-ask {
-                padding: 1vw 2vw;
-                width: 50%;
-                height: auto;
-                background-color: ${messageInput.style.backgroundColor} !important;
-                position: absolute;
-                bottom: 0;
-                left: 0;
-                right: 0;
-                display: flex;
-            }
-
-            .input-message {
-                width: 100%;
-                background-color: ${messageInput.style.backgroundColor} !important;
-            }
-
-            .input-message::placeholder {
-                font-size: 18px;
-            }
-
-            input:focus {
-                outline: none;
-            }
-
-            .base-submit {
-                background-image: url(./icons/submit.svg);
-                width: 15px;
-                height: 15px;
-                border: none;
-                background-color: transparent;
-                margin-top: 13px;
-                background-repeat: no-repeat;
-            }
-
-            /* Применение цветов к сообщениям */
-            .bot-message {
-                background-color: ${document.getElementById('assistentColor').value};
-                color: ${document.getElementById('textColor').value};
-            }
-
-            .user-message {
-                background-color: ${document.getElementById('userColor').value};
-                color: ${document.getElementById('textColor').value};
-            }
+    function generateExportJS() {
+        const js = `
+            document.getElementById('window-ask').addEventListener('submit', async function(event) {
+                event.preventDefault();
+                const userMessage = document.getElementById('message').value.trim();
+                if (userMessage === '') return;
+    
+                const userMessageElement = document.createElement('div');
+                userMessageElement.className = 'message user-message';
+                userMessageElement.textContent = userMessage;
+                document.getElementById('dialog').appendChild(userMessageElement);
+                document.getElementById('message').value = '';
+                document.getElementById('dialog').scrollTop = document.getElementById('dialog').scrollHeight;
+    
+                try {
+                    const response = await fetch('http://localhost:8090/api/chats/send/${assistantId}', {
+                        method: 'POST',
+                        headers: {
+                            'Content-Type': 'application/json',
+                            'Authorization': 'Bearer ${accessToken}',
+                        },
+                        body: JSON.stringify({ message: userMessage })
+                    });
+    
+                    if (!response.ok) {
+                        throw new Error('Ошибка при отправке сообщения.');
+                    }
+    
+                    const data = await response.json();
+                    const assistantMessage = data.message;
+    
+                    const assistantMessageElement = document.createElement('div');
+                    assistantMessageElement.className = 'message bot-message';
+                    assistantMessageElement.textContent = assistantMessage;
+                    document.getElementById('dialog').appendChild(assistantMessageElement);
+                    document.getElementById('dialog').scrollTop = document.getElementById('dialog').scrollHeight;
+                } catch (error) {
+                    console.error('Ошибка при отправке сообщения:', error);
+                    const errorMessageElement = document.createElement('div');
+                    errorMessageElement.className = 'message error';
+                    errorMessageElement.textContent = 'Ошибка при отправке сообщения';
+                    document.getElementById('dialog').appendChild(errorMessageElement);
+                    document.getElementById('dialog').scrollTop = document.getElementById('dialog').scrollHeight;
+                }
+            });
         `;
-        return css;
+        return js;
     }
 
     // Функция для генерации JavaScript-кода
@@ -519,7 +468,7 @@ document.addEventListener('DOMContentLoaded', function () {
                     'Authorization': `Bearer ${accessToken}`,
                 },
             });
-
+    
             if (!response.ok) {
                 if (response.status === 401) {  // 401 - Unauthorized, токен истек
                     console.log("Token expired. Trying to refresh...");
@@ -528,11 +477,11 @@ document.addEventListener('DOMContentLoaded', function () {
                     throw new Error('Ошибка при проверке токена.');
                 }
             }
-
+    
             const html = generateExportHTML();
             const css = generateExportCSS();
             const js = generateExportJS();
-
+    
             const exportCode = `
                 <!DOCTYPE html>
                 <html lang="en">
@@ -548,7 +497,7 @@ document.addEventListener('DOMContentLoaded', function () {
                 </body>
                 </html>
             `;
-
+    
             const blob = new Blob([exportCode], { type: 'text/html' });
             const url = URL.createObjectURL(blob);
             const a = document.createElement('a');
