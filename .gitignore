@@ -1,6 +1,76 @@
+# Общие настройки
+# Игнорируем временные файлы операционной системы
+.DS_Store
+Thumbs.db
+ehthumbs.db
+
+# Логи
+*.log
+
+# Игнорируем скомпилированные файлы и директории
+*.exe
+*.dll
+*.so
+*.dylib
+*.out
+
+# Игнорируем промежуточные файлы IDE и редакторов
+.idea/
+.vscode/
+*.swp
+*.swo
+*.swn
+
+# Игнорируем файлы конфигурации среды и баз данных
+.env
+
+# Игнорируем файлы пакетов
+*.tar.gz
+*.zip
+*.rar
+*.7z
+*.tar
+
+# Исключаем папки и файлы для Python
+*.pyc
+*.pyo
+*.pyd
+__pycache__/
+
+# Игнорируем каталоги моделей в ml
 ml/models/
+ml/__pycache__/
 
-backend/go.mod
-backend/go.sum
+# Игнорируем каталоги, связанные с данными
+ml/bases/
+ml/models/*/db/
+ml/models/*/log/
 
-ml/.env
+# Игнорируем каталоги и файлы, которые могут содержать большие данные
+backend/output/
+backend/scripts/migration.sql
+
+# Игнорируем скомпилированные файлы Go
+*.exe
+*.test
+*.out
+
+# Папки Go проекта
+backend/vendor/
+
+# Игнорируем каталоги и файлы, связанные с Docker (если применимо)
+docker-compose.yml
+docker-compose.override.yml
+*.dockerfile
+
+# Исключаем все временные файлы, сгенерированные при сборке
+*.build/
+*.tmp/
+*.bak
+
+# Игнорируем пакеты npm (для frontend)
+node_modules/
+
+# Игнорируем пакеты, скомпилированные Go
+*.mod
+*.sum
