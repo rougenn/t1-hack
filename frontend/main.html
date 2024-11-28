@@ -1,0 +1,183 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Окно знаний | YSL</title>
+    <link href="./styles.css" rel="stylesheet">
+    <link rel="shortcut icon" href="./icons/YSL.svg" type="image/x-icon">
+    <script src="./scripts.js" defer></script>
+</head>
+<body>
+    <header class="header-major">
+        <div class="left-elements">
+            <img src="./icons/YSL-logo.svg" alt="" class="header-logo">
+            <p class="header-slogan">Все ответы в одном месте.</p>
+        </div>
+        <div class="right-elements">
+            <p class="user-login">user_name</p>
+            <a href="./login.html" class="go-away">Выход</a>
+        </div>
+    </header>
+    <main class="major-page">
+        <section class="settings">
+            <h2 class="major-title">Настройки ассистента</h2>
+            <section class="base-of-knowledge">
+                <h3 class="base-knowledge">БАЗА ЗНАНИЙ</h3>
+                <p class="base-description">Добавьте свою базу знаний в 
+                    удобном формате. Поддержка баз знаний разных типов: 
+                    текстовые документы (pdf, docx, txt), 
+                    URL, Notion, Confluence.</p>
+                <div class="knowledge-base-form">
+                    <!-- Форма для URL -->
+                    <form action="/submit-url" method="post" class="base-form" id="urlForm">
+                        <div class="input-group input-url">
+                            <label for="url"></label>
+                            <input type="url" id="url" name="url" placeholder="URL" class="base-placeholder placeholder-url input-custom">
+                        </div>
+                        <button type="submit" class="base-submit"></button>
+                    </form>
+
+                    <!-- Форма для документа -->
+                    <form action="/submit-document" method="post" enctype="multipart/form-data" class="base-form" id="documentForm">
+                        <div class="input-group input-document">
+                            <label for="document" class="custom-file-upload">
+                                <span class="upload-icon"></span>
+                                Добавить файл
+                            </label>
+                            <input type="file" id="document" name="document" accept=".pdf,.docx,.txt" class="input-custom" style="display: none;">
+                        </div>
+                        <button type="submit" class="base-submit"></button>
+                    </form>
+
+                    <!-- Форма для Notion -->
+                    <form action="/submit-notion" method="post" class="base-form" id="notionForm">
+                        <div class="input-group input-notion">
+                            <label for="notion"></label>
+                            <input type="url" id="notion" name="notion" placeholder="Notion" class="base-placeholder placeholder-notion input-custom">
+                        </div>
+                        <button type="submit" class="base-submit"></button>
+                    </form>
+
+                    <!-- Форма для Confluence -->
+                    <form action="/submit-confluence" method="post" class="base-form" id="confluenceForm">
+                        <div class="input-group input-confluence">
+                            <label for="confluence"></label>
+                            <input type="url" id="confluence" name="confluence" placeholder="Confluence" class="base-placeholder placeholder-confluence input-custom">
+                        </div>
+                        <button type="submit" class="base-submit"></button>
+                    </form>
+
+                </div>
+            </section>
+            <section class="custom">
+                <h3 class="base-knowledge">КАСТОМИЗАЦИЯ</h3>
+                <p class="base-description">Настройте приложение под ваши задачи: 
+                    изменяйте стили, цвета и элементы интерфейса.</p>
+                <div class="name-custom">
+                    <p class="custom-title">Название</p>
+                    <form action="/submit-name" method="post" class="custom-form form-flex" id="customName">
+                        <div class="input-group">
+                            <label for="name"></label>
+                            <input type="text" id="name" name="name" placeholder="Название ассистента" class="input-custom">
+                        </div>
+                        <button type="submit" class="base-submit"></button>
+                    </form>
+                </div>
+                <div class="llms">
+                    <p class="custom-title">Выбор LLM</p>
+                    <form class="form-llm">
+                        <label for="llm-select"></label>
+                        <select name="llm-select" id="llm-select" class="llm-select">
+                          <option value="llm-1b">LLaMA 3.2-1B-instruct (менее ресурсоемкая)</option>
+                          <option value="llm-3b">LLaMA 3.2-3B-instruct (точнее, но требует больше ресурсов)</option>
+                        </select>
+                      </form>
+                    
+
+                </div>
+                <div class="logo-custom">
+                    <p class="custom-title">Логотип</p>
+                    <div class="logo-form">
+                        <div class="logo-image">
+                            <img src="./icons/example-logo.svg" alt="" class="img-example">
+                        </div>
+                       <form action="/submit-logo" method="post" id="customLogo">
+                            <div class="input-group custom-logo">
+                                <label for="logo" class="custom-file-upload">Добавить файл</label>
+                                <input type="file" id="logo" name="logo" placeholder="Логотип">
+                            </div>
+                            <button type="submit" class="base-submit"></button>
+
+                       </form>
+                    </div>
+                </div>
+                <div class="font-custom">
+                    <p class="custom-title">Шрифт</p>
+                    <div class="font-form">
+                        <form action="/submit-font" method="post" id="customFont" class="form-flex">
+                            <div class="input-group custom-font">
+                                <label for="font" class="custom-file-upload">Добавить файл</label>
+                                <input type="file" id="font" name="font" placeholder="Логотип" accept=".ttf,.otf,.woff,.woff2">
+                            </div>
+                            <button type="submit" class="base-submit"></button>
+                        </form>
+                    </div>
+                </div>
+                <div class="color-custom">
+                    <div class="background-pick">
+                        <p class="custom-title">Фон</p>
+                        <form action="/submit-background-color" class="color-custom-form" id="customBackground">
+                            <label for="backgroundColor"></label>
+                            <input type="color" id="backgroundColor" name="backgroundColor" value="#1C1F4A"  class="color-custom-input">
+                            <button id="applyBackgroundColor" class="base-submit"></button>
+                        </form>
+                    </div>
+                    <div class="text-pick">
+                        <p class="custom-title">Текст</p>
+                        <form action="/submit-text-color" class="color-custom-form" id="customText">
+                            <label for="textColor"></label>
+                            <input type="color" id="textColor" name="textColor" value="#FFFFFF"  class="color-custom-input">
+                            <button id="applyTextColor" class="base-submit"></button>
+                        </form>
+                    </div>
+                    <div class="assistent-pick">
+                        <p class="custom-title">Ассистент</p>
+                        <form action="/submit-assistent-color" class="color-custom-form" id="customAssistent">
+                            <label for="assistentColor"></label>
+                            <input type="color" id="assistentColor" name="assistentColor" value="#0072C9"  class="color-custom-input">
+                            <button id="applyAssistentColor" class="base-submit"></button>
+                        </form>
+                        
+                        
+                    </div>
+                    <div class="user-pick">
+                        <p class="custom-title">Пользователь</p>
+                        <form action="/submit-user-color" class="color-custom-form" id="customUser">
+                            <label for="userColor"></label>
+                            <input type="color" id="userColor" name="userColor" value="#05AAE6"  class="color-custom-input">
+                            <button id="applyUserColor" class="base-submit"></button>
+                        </form>
+                        
+                    </div>
+                </div>
+            </section>
+            
+        </section>
+        <section class="viewport">
+            <h2 class="major-title">Просмотр решения</h2>
+            <div class="major-view-buttons">
+                <button class="major-save">Сохранить</button>
+                <button class="major-export">Экспорт</button>
+            </div>
+            <div id="window-view" class="window-view">
+                <div id="header-window" class="header-window">Название ассистента</div>
+                <div id="dialog" class="dialog"></div>
+                <div class="window-ask" id="window-ask">
+                    <input type="text" class="input-message" id="message" placeholder="Введите сообщение...">
+                    <button id="send-btn">Отправить</button>
+                </div>
+            </div>
+        </section>
+</body>
+</html>

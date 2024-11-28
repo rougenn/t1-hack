@@ -1,0 +1,37 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Окно знаний | Авторизация</title>
+    <link href="./styles.css" rel="stylesheet">
+    <link rel="shortcut icon" href="./icons/YSL.svg" type="image/x-icon">
+    <script src="./token.js" defer></script>
+    <script src="./scripts-login.js" defer></script>
+</head>
+<body>
+    <header class="header">
+        <img src="./icons/YSL-logo.svg" alt="" class="header-logo">
+        <p class="header-slogan">Все ответы в одном месте.</p>
+    </header>
+    <main class="main-login">
+        <div class="modal">
+            <h1 class="welcome">Добро пожаловать!</h1>
+            <form action="" class="form-login" method="post" id="loginForm">
+                <p class="form-paragraph">Логин</p>
+                <input type="text" id="login" placeholder="Введите ваш логин" class="form-styles" required>
+                <p class="form-paragraph">Пароль</p>
+                <input type="password" id="password" placeholder="Введите ваш пароль" class="form-styles" required>
+                <button type="submit" class="button-login">Войти</button>
+                <div id="errorMessage" class="error"></div>
+            </form>
+        </div>
+        <div class="without-account">
+            <div class="question">Ещё нет аккаунта?</div>
+            <a href="./registration.html" class="go-registration">Зарегистрироваться</a>
+        </div>
+        <div id="errorMessage" class="error"></div>
+    </main>
+    
+</body>
+</html>

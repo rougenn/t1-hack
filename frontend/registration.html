@@ -1,0 +1,34 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Окно знаний | Регистрация</title>
+    <link href="./styles.css" rel="stylesheet">
+    <link rel="shortcut icon" href="./icons/YSL.svg" type="image/x-icon">
+    <script src="./token.js"></script>
+    <script src="./scripts-registration.js" defer></script>
+</head>
+<body>
+    <header class="header">
+        <img src="./icons/YSL-logo.svg" alt="" class="header-logo">
+        <p class="header-slogan">Все ответы в одном месте.</p>
+    </header>
+    <main class="main-registration">
+        <a href="./login.html" class="back-login">Назад</a>
+        <h1 class="registration">Регистрация</h1>
+        <form action="" class="form-registration" method="post" id="registrationForm">
+            <p class="form-paragraph">Логин</p>
+            <input type="text" id="login" placeholder="Введите ваш логин" class="form-styles" required>
+            <p class="form-paragraph">E-mail</p>
+            <input type="email" id="email" placeholder="Введите ваш e-mail" class="form-styles" required>
+            <p class="form-paragraph">Пароль</p>
+            <input type="password" id="password" placeholder="Введите ваш пароль" class="form-styles" required>
+            <p class="form-paragraph">Пароль</p>
+            <input type="password" id="confirmPassword" placeholder="Повторите пароль" class="form-styles" required>
+            <button type="submit" class="button-login">Зарегистрироваться</button>
+            <div id="errorMessage" class="error"></div>
+        </form>
+    </main>
+</body>
+</html>
