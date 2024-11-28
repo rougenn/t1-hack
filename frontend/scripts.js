@@ -131,20 +131,6 @@ document.addEventListener('DOMContentLoaded', function () {
     const dialog = document.getElementById('dialog');
     const sendBtn = document.getElementById('send-btn');
 
-    if (sendBtn) {
-        sendBtn.addEventListener('click', async function() {
-            console.log("Кнопка нажата!");  // Проверяем, срабатывает ли обработчик
-            const message = messageInput.value.trim();
-            if (!message) return;
-
-            // Логика отправки сообщения
-            console.log("Отправляем сообщение:", message);
-            // Добавить код для отправки сообщения...
-        });
-    } else {
-        console.error("Кнопка с id 'send-btn' не найдена!");
-    }
-
     sendBtn.addEventListener('click', async function() {
         if (!assistantId) {
             alert("Пожалуйста, создайте ассистента перед отправкой сообщений.");

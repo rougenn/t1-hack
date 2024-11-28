@@ -14,7 +14,7 @@ def train_model():
     try:
         # Создаем и обучаем модель
         print(txt_files_directory)
-        model = RAGModel(model_name=assistant_name, database_path=txt_files_directory, llama_version=model_name)
+        # model = RAGModel(model_name=assistant_name, database_path=txt_files_directory, llama_version=model_name)
         return jsonify({"status": "OK"}), 200
     except Exception as e:
         print(e)
@@ -27,9 +27,9 @@ def ask_question():
     question = data['message']
     try:
         # Загружаем модель и получаем ответ
-        model = RAGModel(model_name=assistant_name)
-        answer = model.ask_question(question)
-        # answer = "allgood"
+        # model = RAGModel(model_name=assistant_name)
+        # answer = model.ask_question(question)
+        answer = "allgood"
         print(answer)
         return jsonify({"message": answer}), 200
     except Exception as e:
