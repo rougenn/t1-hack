@@ -11,7 +11,7 @@ document.getElementById('registrationForm').addEventListener('submit', function(
         return;
     }
 
-    // Проверка длины пароля
+    // Проверка длины паролей
     if (password.length < 8) {
         document.getElementById('errorMessage').textContent = 'Password must be at least 8 characters';
         return;
