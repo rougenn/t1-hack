@@ -299,8 +299,8 @@ input{
 
 
 .major-page{
-  display: flex;  /* Используем flexbox для выравнивания секций */
-  height: 100vh;  /* Задаем общий размер для контейнера */
+  display: flex;
+  height: 100vh;
 }
 
 .settings {
