@@ -26,7 +26,7 @@ document.getElementById('loginForm').addEventListener('submit', function(event) 
             localStorage.setItem('user_email', data.user.email);  // Сохраняем email
 
             console.log('Login successful');
-            window.location.href = './main.html'; // Перенаправление на другую страницу
+            window.location.href = './main.html'; // Перенаправляем на другую страницу
         } else {
             // Выводим ошибку, если токенов или email нет
             document.getElementById('errorMessage').textContent = 'Invalid login or password';
