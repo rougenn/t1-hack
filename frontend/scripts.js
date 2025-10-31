@@ -9,7 +9,7 @@ document.addEventListener('DOMContentLoaded', function () {
         return;
     }
 
-    // Отображаем email пользователя
+    // Отображаем email 
     const userLogin = document.getElementById('userLogin');
     const logoutBtn = document.getElementById('logoutBtn');
     const userEmail = localStorage.getItem('user_email');
